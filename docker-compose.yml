@@ -4,10 +4,10 @@ services:
 
   go-cart-api:
     container_name: go-cart-api
+    image: christianprzybulinski/builder
     build: 
       context: .
       dockerfile: docker/go-cart-api
-      image: christianprzybulinski/golang:1.17-alpine
     env_file: .env
     networks:
       - default
