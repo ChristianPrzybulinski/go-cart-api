@@ -94,17 +94,17 @@ func Test_jsonToMap(t *testing.T) {
 		want    map[int]Product
 		wantErr bool
 	}{
-		{"working json", args{[]byte(mocksData[0].mockJson)},
+		{"simple json", args{[]byte(mocksData[0].mockJson)},
 			map[int]Product{mocksData[0].mockStruct[0].Id: mocksData[0].mockStruct[0]}, false},
 
-		{"working json 2", args{[]byte(mocksData[1].mockJson)},
+		{"simple json with other data", args{[]byte(mocksData[1].mockJson)},
 			map[int]Product{mocksData[1].mockStruct[0].Id: mocksData[1].mockStruct[0]}, false},
 
-		{"working json 3", args{[]byte(mocksData[2].mockJson)}, productMap, false},
+		{"json with multiple data", args{[]byte(mocksData[2].mockJson)}, productMap, false},
 
-		{"working json vazio", args{[]byte("")}, map[int]Product{}, false},
+		{"empty json", args{[]byte("")}, map[int]Product{}, false},
 
-		{"json incomplete 4", args{[]byte(mocksData[3].mockJson)},
+		{"malformatted json", args{[]byte(mocksData[3].mockJson)},
 			map[int]Product{mocksData[3].mockStruct[0].Id: mocksData[3].mockStruct[0]}, true},
 	}
 
@@ -137,7 +137,7 @@ func Test_loadProducts(t *testing.T) {
 		wantErr bool
 	}{
 		{"working case", args{"test.json"}, []byte("test"), false},
-		{"not working case", args{"noexist.json"}, []byte("test"), true},
+		{"file doesnt exists", args{"noexist.json"}, []byte("test"), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
