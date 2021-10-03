@@ -8,44 +8,49 @@ on:
       - develop
 
 jobs:
-  build:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.17"
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: "1.17"
 
-      - name: Install dependencies
-        run: |
-          go version
-          go get -u golang.org/x/lint/golint
-      - name: Run build
-        run: go build .
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+        
+    - name: Start containers
+      run: docker-compose up --build
 
-      - name: Run vet & lint
-        run: |
-          go vet .
-          golint .
-      - name: Run testing
-        run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
+    - name: Run vet & lint
+      run: |
+        go vet .
+        golint .
+          
+    - name: Run testing
+      run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ChristianPrzybulinski/go-cart-api:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ChristianPrzybulinski/go-cart-api:latest
+        secrets: |
+          GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
