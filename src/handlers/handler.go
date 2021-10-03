@@ -1,23 +1,26 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
+	"github.com/ChristianPrzybulinski/go-cart-api/src/endpoints"
 	"github.com/gorilla/mux"
 )
 
-func StartServer(port string) {
+func StartServer(port string, products map[int]database.Product) {
 	router := mux.NewRouter().PathPrefix("/api/v1/").Subrouter()
-	SetupHandlers(router)
+	SetupHandlers(router, products)
+
+	log.Infoln("Server running in port", port)
 	http.ListenAndServe(port, router)
 }
 
-func SetupHandlers(router *mux.Router) {
+func SetupHandlers(router *mux.Router, products map[int]database.Product) {
 
-	router.HandleFunc("/cart", homePage).Methods(http.MethodGet)
-}
+	router.HandleFunc("/cart", endpoints.CartEndpoint{Database: products}.Post).Methods(http.MethodPost)
+	log.Infoln("Endpoint /cart active.")
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world!")
 }
