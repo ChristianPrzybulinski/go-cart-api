@@ -36,10 +36,6 @@ func GetError(e error) *Error {
 }
 
 func (err *Error) Error() string {
-	return err.String()
-}
-
-func (err *Error) String() string {
 	if err == nil {
 		return ""
 	}
