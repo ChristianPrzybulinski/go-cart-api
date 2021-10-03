@@ -46,4 +46,4 @@ jobs:
         password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
     - name: Docker compose Push
-      uses: docker-compose push
+      run: docker-compose push
