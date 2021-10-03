@@ -124,3 +124,34 @@ func Test_jsonToMap(t *testing.T) {
 		})
 	}
 }
+
+func Test_loadProducts(t *testing.T) {
+	type args struct {
+		file string
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{"working case", args{"test.json"}, []byte("test"), false},
+		{"not working case", args{"noexist.json"}, []byte("test"), true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := loadProducts(tt.args.file)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("loadProducts() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+			} else {
+				if !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("name = %v loadProducts() = %v, want %v", tt.name, got, tt.want)
+				}
+			}
+		})
+	}
+}

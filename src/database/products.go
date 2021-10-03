@@ -64,5 +64,4 @@ func loadProducts(file string) ([]byte, error) {
 	defer jsonFile.Close()
 
 	return nil, err
-
 }
