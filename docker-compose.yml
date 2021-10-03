@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  go-cart-api:
+    container_name: go-cart-api
+    build: 
+      context: .
+      dockerfile: docker/go-cart-api
+    env_file: .env
+    networks:
+      - default
+    ports:
+    - "${API_PORT}:${API_PORT}"
+    restart: on-failure
+    volumes:
+      - .:${APP_PATH}/go-cart-api
