@@ -16,7 +16,7 @@ func mockMaps(id []int, title []string, desc []string, amount []int, gift []bool
 
 	jsonString := "["
 
-	for i, _ := range id {
+	for i := range id {
 		products = append(products, Product{id[i], title[i], desc[i], amount[i], gift[i]})
 
 		if i > 0 {
