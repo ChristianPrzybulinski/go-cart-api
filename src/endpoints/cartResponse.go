@@ -79,7 +79,17 @@ func handleProductRequest(r CartRequest, database map[int]database.Product) (Res
 
 	if val, ok := database[r.Id]; ok {
 
-		dPercentage := discount.DescountPercentage(os.Getenv("DISCOUNT_SERVICE_HOST")+os.Getenv("DISCOUNT_SERVICE_PORT"), int32(r.Id))
+		discountHost := os.Getenv("DISCOUNT_SERVICE_HOST")
+		discountPort := os.Getenv("DISCOUNT_SERVICE_PORT")
+
+		if len(discountHost) == 0 {
+			discountHost = ":"
+		}
+		if len(discountPort) == 0 {
+			discountPort = "50051"
+		}
+
+		dPercentage := discount.DescountPercentage(discountHost+discountPort, int32(r.Id))
 		discountTotal := math.Round(float64(float32(val.Amount*r.Quantity) * dPercentage))
 		return ResponseProduct{r.Id, r.Quantity, val.Amount, val.Amount * r.Quantity, int(discountTotal), false}, true
 	}

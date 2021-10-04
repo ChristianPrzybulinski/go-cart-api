@@ -16,10 +16,28 @@ func main() {
 	log.Infoln("Logs started with " + log.GetLevel().String() + " level.")
 
 	log.Infoln("Loading Products Database...")
-	products, err := database.GetAllProducts(os.Getenv("DATABASE_PATH") + "/products.json")
+
+	databasePath := os.Getenv("DATABASE_PATH")
+
+	if len(databasePath) == 0 {
+		databasePath = "./database"
+	}
+
+	products, err := database.GetAllProducts(databasePath + "/products.json")
 	if err == nil {
 		log.Infoln("Products Database Loaded.")
-		handlers.StartServer(os.Getenv("API_HOST")+os.Getenv("API_PORT"), products)
+
+		hostname := os.Getenv("API_HOST")
+		hostport := os.Getenv("API_PORT")
+
+		if len(hostname) == 0 {
+			hostname = ":"
+		}
+		if len(hostport) == 0 {
+			hostport = "8080"
+		}
+
+		handlers.StartServer(hostname+hostport, products)
 	} else {
 		log.Errorln(err.Error())
 		os.Exit(1)

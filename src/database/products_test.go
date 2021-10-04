@@ -177,7 +177,7 @@ func TestGetAllProducts(t *testing.T) {
 		{"working case 1", args{"unitTestData/1.json"}, map1, false},
 		{"working case 2", args{"unitTestData/2.json"}, map2, false},
 		{"not working case 1", args{"unitTestData/3.json"}, nil, true},
-		{"not working case 1", args{"unitTestData/nonexist.json"}, nil, true},
+		{"not working case 2", args{"unitTestData/nonexist.json"}, nil, true},
 	}
 
 	for _, tt := range tests {
