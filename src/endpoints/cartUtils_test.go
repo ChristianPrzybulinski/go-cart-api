@@ -44,7 +44,7 @@ func Test_getGift(t *testing.T) {
 	}
 
 	map2 := make(map[int]database.Product)
-	map2[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: true}
+	map2[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: false}
 	map2[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
 
 	response2 := []ResponseProduct{
@@ -53,7 +53,7 @@ func Test_getGift(t *testing.T) {
 
 	map3 := make(map[int]database.Product)
 	map3[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: true}
-	map3[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: false}
+	map3[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
 
 	response3 := []ResponseProduct{
 		{0, 1, 0, 0, 0, true},
