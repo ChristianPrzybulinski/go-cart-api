@@ -23,4 +23,5 @@ func main() {
 		log.Errorln(err.Error())
 	}
 	handlers.StartServer(":"+os.Getenv("API_PORT"), products)
+
 }

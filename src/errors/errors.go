@@ -19,6 +19,10 @@ var (
 		Code:    http.StatusNotFound,
 		Message: "Not Found (404)",
 	}
+	ErrEmptyCart = &Error{
+		Code:    http.StatusBadRequest,
+		Message: "Bad Request (400) - Empty Cart / no Product found!",
+	}
 )
 
 type Error struct {
@@ -47,7 +51,12 @@ func (err *Error) JSON() string {
 	if err == nil {
 		return ("{}")
 	}
-	res, _ := json.Marshal(err)
+	res, e := json.Marshal(err)
+
+	if e != nil {
+		return "{}"
+	}
+
 	return string(res)
 }
 

@@ -4,7 +4,7 @@ services:
 
   go-cart-api:
     container_name: go-cart-api
-    image: christianprzybulinski/builder
+    image: christianprzybulinski/go-cart-api
     build: 
       context: .
       dockerfile: docker/go-cart-api
@@ -16,3 +16,15 @@ services:
     restart: on-failure
     volumes:
       - .:${APP_PATH}/go-cart-api
+
+  discount-service:
+    container_name: discount-service
+    image: hashorg/hash-mock-discount-service
+    build: .
+    networks:
+      - default
+    ports:
+    - "9090:9090"
+    restart: on-failure
+    volumes:
+      - .:${APP_PATH}/discount-service

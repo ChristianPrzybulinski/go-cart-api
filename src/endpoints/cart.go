@@ -1,9 +1,7 @@
 package endpoints
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -16,39 +14,29 @@ type CartEndpoint struct {
 	Database map[int]database.Product
 }
 
-type CartRequests struct {
-	CartRequest []struct {
-		Id       int `json:"id"`
-		Quantity int `json:"quantity"`
-	} `json:"products"`
-}
-
 func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
-	requests, err := cart.handleRequest(r)
-
-	w.Header().Set("Content-Type", "application/json")
+	requests, err := handleRequest(r)
 
 	if err == nil {
-		cart.sendResponse(w, requests)
-	} else {
-		log.Errorln(err.Error())
-		fmt.Fprintf(w, errors.GetError(err).JSON()) //to-do validar se eh o melhor metodo para retornar
+		r, err := handleResponse(requests, cart.Database)
+		ok := cart.sendResponse(w, r, err)
+		log.Infoln("The request was processed: ", ok)
 	}
 }
 
-func (cart CartEndpoint) sendResponse(w http.ResponseWriter, requests CartRequests) error {
-	fmt.Fprintf(w, cart.Database[requests.CartRequest[0].Id].Description)
-	return nil
-}
-
-func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
-	var cartRequests CartRequests
-	body, err := ioutil.ReadAll(r.Body)
+func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartResponse, err error) bool {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if err == nil {
-		log.Debugln("/cart API request: " + string(body))
-		err = json.Unmarshal(body, &cartRequests)
+		responseJSON, err := response.JSON()
+		if err == nil {
+			fmt.Fprintf(w, responseJSON)
+		}
 	}
 
-	return cartRequests, err
+	w.WriteHeader(errors.GetError(err).StatusCode())
+
+	log.Errorln(err.Error())
+	fmt.Fprintf(w, errors.GetError(err).JSON())
+	return false
 }
