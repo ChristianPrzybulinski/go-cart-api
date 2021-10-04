@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"sort"
 	"time"
 
 	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
@@ -35,6 +36,10 @@ func mapToSlice(mapProduct map[int]ResponseProduct) []ResponseProduct {
 	for _, value := range mapProduct {
 		response = append(response, value)
 	}
+
+	sort.SliceStable(response, func(i, j int) bool {
+		return response[i].ID < response[j].ID
+	})
 
 	return response
 }
