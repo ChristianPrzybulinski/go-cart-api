@@ -17,10 +17,7 @@ func DescountPercentage(port string, product int32) float32 {
 
 	conn, err := grpc.Dial(port, grpc.WithInsecure())
 
-	if err != nil {
-		log.Errorln("did not connect: ", err)
-	} else {
-
+	if err == nil {
 		client := NewDiscountClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
@@ -31,7 +28,6 @@ func DescountPercentage(port string, product int32) float32 {
 		if err != nil {
 			log.Errorln("Error when calling GetDiscount: ", err)
 		} else {
-			log.Infoln("Response from server: ", resp.Percentage)
 			percentageResponse = resp.Percentage
 		}
 	}
