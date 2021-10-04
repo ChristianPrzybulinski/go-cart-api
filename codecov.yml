@@ -1,0 +1,4 @@
+ignore:
+  - "*.proto"  # ignoring proto file just to be sure
+  - "*.json"       # ignoring json files just to be sure
+  - "*.pb.go"         # ignoring discount func

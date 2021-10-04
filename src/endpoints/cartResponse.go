@@ -2,9 +2,11 @@ package endpoints
 
 import (
 	"encoding/json"
+	"math"
 	"os"
 
 	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
+	"github.com/ChristianPrzybulinski/go-cart-api/src/discount"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -27,7 +29,7 @@ type ResponseProduct struct {
 
 func handleResponse(requests CartRequests, database map[int]database.Product) (CartResponse, error) {
 	var response CartResponse
-	var responseProducts []ResponseProduct
+	var productMap map[int]ResponseProduct = make(map[int]ResponseProduct)
 
 	response.TotalAmount = 0
 	response.TotalAmountWithDiscount = 0
@@ -42,7 +44,13 @@ func handleResponse(requests CartRequests, database map[int]database.Product) (C
 			response.TotalAmountWithDiscount = response.TotalAmountWithDiscount + (rProduct.TotalAmount - rProduct.Discount)
 			response.TotalDiscount = response.TotalDiscount + rProduct.Discount
 
-			responseProducts = append(responseProducts, rProduct)
+			if v, found := productMap[rProduct.ID]; found {
+				v.TotalAmount = v.TotalAmount + rProduct.TotalAmount
+				v.TotalAmount = v.Quantity + rProduct.Quantity
+				v.TotalAmount = v.Discount + rProduct.Discount
+			} else {
+				productMap[rProduct.ID] = rProduct
+			}
 
 			log.Debugln("Current Total Amount: ", response.TotalAmount)
 			log.Debugln("Current Total Amount with Dicount: ", response.TotalAmount)
@@ -50,15 +58,17 @@ func handleResponse(requests CartRequests, database map[int]database.Product) (C
 		}
 	}
 
-	if len(responseProducts) > 0 {
+	productSlice := mapToSlice(productMap)
+
+	if len(productMap) > 0 {
 		if isBlackFriday(os.Getenv("BLACK_FRIDAY")) {
 			rGift := getGift(database)
 			if (rGift != ResponseProduct{}) {
 				log.Debugln("Adding gift to the cart, BLACK FRIDAY baby")
-				responseProducts = append(responseProducts, rGift)
+				productSlice = append(productSlice, rGift)
 			}
 		}
-		response.Products = responseProducts
+		response.Products = productSlice
 		return response, nil
 	}
 
@@ -69,9 +79,9 @@ func handleProductRequest(r CartRequest, database map[int]database.Product) (Res
 
 	if val, ok := database[r.Id]; ok {
 
-		discount, _ := getDiscoutForProduct(r)
-
-		return ResponseProduct{r.Id, r.Quantity, val.Amount, val.Amount * r.Quantity, discount, false}, true
+		dPercentage := discount.DescountPercentage(os.Getenv("DISCOUNT_SERVICE_HOST")+os.Getenv("DISCOUNT_SERVICE_PORT"), int32(r.Id))
+		discountTotal := math.Round(float64(float32(val.Amount*r.Quantity) * dPercentage))
+		return ResponseProduct{r.Id, r.Quantity, val.Amount, val.Amount * r.Quantity, int(discountTotal), false}, true
 	}
 
 	log.Errorln("Product ID not Found in database! Product not added..")

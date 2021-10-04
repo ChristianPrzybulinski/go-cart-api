@@ -103,3 +103,34 @@ func Test_getGift(t *testing.T) {
 		})
 	}
 }
+
+func Test_mapToSlice(t *testing.T) {
+	type args struct {
+		mapProduct map[int]ResponseProduct
+	}
+
+	map1 := make(map[int]ResponseProduct)
+	map1[1] = ResponseProduct{ID: 1, Quantity: 1, UnitAmount: 23, TotalAmount: 22, Discount: 1, IsGift: true}
+	slice1 := []ResponseProduct{{1, 1, 23, 22, 1, true}}
+
+	map2 := make(map[int]ResponseProduct)
+	map2[1] = ResponseProduct{ID: 1, Quantity: 1, UnitAmount: 23, TotalAmount: 22, Discount: 1, IsGift: true}
+	map2[2] = ResponseProduct{ID: 2, Quantity: 2, UnitAmount: 44, TotalAmount: 27, Discount: 2, IsGift: false}
+	slice2 := []ResponseProduct{{1, 1, 23, 22, 1, true}, {2, 2, 44, 27, 2, false}}
+
+	tests := []struct {
+		name string
+		args args
+		want []ResponseProduct
+	}{
+		{"one element test", args{map1}, slice1},
+		{"two element test", args{map2}, slice2},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := mapToSlice(tt.args.mapProduct); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("mapToSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

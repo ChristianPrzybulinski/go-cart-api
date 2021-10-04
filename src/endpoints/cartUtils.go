@@ -7,10 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func getDiscoutForProduct(r CartRequest) (int, error) {
-	return 0, nil
-}
-
 func getGift(database map[int]database.Product) ResponseProduct {
 
 	for _, r := range database {
@@ -31,4 +27,14 @@ func isBlackFriday(blackFriday string) bool {
 		today := time.Now().Format("2006-01-02")
 		return today == blackFriday
 	}
+}
+
+func mapToSlice(mapProduct map[int]ResponseProduct) []ResponseProduct {
+	var response []ResponseProduct
+
+	for _, value := range mapProduct {
+		response = append(response, value)
+	}
+
+	return response
 }

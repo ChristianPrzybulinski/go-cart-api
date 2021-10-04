@@ -20,11 +20,13 @@ services:
   discount-service:
     container_name: discount-service
     image: hashorg/hash-mock-discount-service
-    build: .
+    build:
+      context: .
+      dockerfile: docker/discount-service
     networks:
       - default
     ports:
-    - "9090:9090"
+    - "${DISCOUNT_SERVICE_PORT}:${DISCOUNT_SERVICE_PORT}"
     restart: on-failure
     volumes:
       - .:${APP_PATH}/discount-service

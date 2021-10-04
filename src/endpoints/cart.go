@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"fmt"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -30,13 +29,13 @@ func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartRespon
 	if err == nil {
 		responseJSON, err := response.JSON()
 		if err == nil {
-			fmt.Fprintf(w, responseJSON)
+			w.Write([]byte(responseJSON))
 		}
 	}
 
 	w.WriteHeader(errors.GetError(err).StatusCode())
 
 	log.Errorln(err.Error())
-	fmt.Fprintf(w, errors.GetError(err).JSON())
+	w.Write([]byte(errors.GetError(err).JSON()))
 	return false
 }

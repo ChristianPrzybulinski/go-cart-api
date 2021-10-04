@@ -19,9 +19,9 @@ func main() {
 	products, err := database.GetAllProducts(os.Getenv("DATABASE_PATH") + "/products.json")
 	if err == nil {
 		log.Infoln("Products Database Loaded.")
+		handlers.StartServer(os.Getenv("API_HOST")+os.Getenv("API_PORT"), products)
 	} else {
 		log.Errorln(err.Error())
+		os.Exit(1)
 	}
-	handlers.StartServer(":"+os.Getenv("API_PORT"), products)
-
 }
