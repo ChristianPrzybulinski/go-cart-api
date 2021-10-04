@@ -48,4 +48,4 @@ jobs:
         password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
     - name: Docker compose Push
-      run: docker-compose push
+      run: docker-compose push go-cart-api
