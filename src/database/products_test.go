@@ -136,8 +136,8 @@ func Test_loadProducts(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		{"working case", args{"test.json"}, []byte("test"), false},
-		{"file doesnt exists", args{"noexist.json"}, []byte("test"), true},
+		{"working case", args{"unitTestData/test.json"}, []byte("test"), false},
+		{"file doesnt exists", args{"unitTestData/noexist.json"}, []byte("test"), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
