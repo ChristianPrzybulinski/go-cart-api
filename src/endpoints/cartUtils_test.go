@@ -56,8 +56,8 @@ func Test_getGift(t *testing.T) {
 	map3[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
 
 	response3 := []ResponseProduct{
-		{0, 1, 0, 0, 0, true},
 		{1, 1, 0, 0, 0, true},
+		{0, 1, 0, 0, 0, true},
 	}
 
 	map4 := make(map[int]database.Product)
