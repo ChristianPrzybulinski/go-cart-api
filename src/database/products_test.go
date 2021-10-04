@@ -136,7 +136,7 @@ func Test_loadProducts(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		{"working case", args{"unitTestData/test.json"}, []byte("test"), false},
+		{"working case", args{"unitTestData/3.json"}, []byte("test"), false},
 		{"file doesnt exists", args{"unitTestData/noexist.json"}, []byte("test"), true},
 	}
 	for _, tt := range tests {
@@ -150,6 +150,44 @@ func Test_loadProducts(t *testing.T) {
 			} else {
 				if !reflect.DeepEqual(got, tt.want) {
 					t.Errorf("name = %v loadProducts() = %v, want %v", tt.name, got, tt.want)
+				}
+			}
+		})
+	}
+}
+
+func TestGetAllProducts(t *testing.T) {
+	type args struct {
+		file string
+	}
+
+	map1 := make(map[int]Product)
+	map1[1] = Product{Id: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, Is_gift: false}
+
+	map2 := make(map[int]Product)
+	map2[1] = Product{Id: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, Is_gift: false}
+	map2[2] = Product{Id: 2, Title: "Ergonomic Cotton Keyboard", Description: "Iste est ratione excepturi repellendus adipisci qui.", Amount: 93811, Is_gift: true}
+
+	tests := []struct {
+		name    string
+		args    args
+		want    map[int]Product
+		wantErr bool
+	}{
+		{"working case 1", args{"unitTestData/1.json"}, map1, false},
+		{"working case 2", args{"unitTestData/2.json"}, map2, false},
+		{"not working case 1", args{"unitTestData/3.json"}, nil, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetAllProducts(tt.args.file)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetAllProducts() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			} else {
+				if !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("GetAllProducts() = %v, want %v", got, tt.want)
 				}
 			}
 		})

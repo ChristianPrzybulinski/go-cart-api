@@ -58,6 +58,7 @@ func TestError_JSON(t *testing.T) {
 		{"StatusInternalServerError", ErrInternal, "{\"Code\":500,\"Message\":\"Internal Server Error (500)\"}"},
 		{"StatusBadRequest", ErrBadRequest, "{\"Code\":400,\"Message\":\"Bad Request (400)\"}"},
 		{"nulo", nil, "{}"},
+		{"Empty cart", ErrEmptyCart, "{\"Code\":400,\"Message\":\"Bad Request (400) - Empty Cart / no Product found!\"}"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

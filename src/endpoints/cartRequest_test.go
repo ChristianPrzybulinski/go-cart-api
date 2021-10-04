@@ -27,6 +27,7 @@ func Test_handleRequest(t *testing.T) {
 		{"invalid request 3", args{mockRequest("{\"products\": [{\"aaa\": 1,\"quantity\": 1 }]}")}, CartRequests{}, true},
 		{"invalid request 3", args{mockRequest("{\"products\": [{\"id\": 1,\"quantity\": asda }]}")}, CartRequests{}, true},
 		{"Double requests", args{mockRequest("{\"products\": [{\"id\": 1,\"quantity\": 1 }, {\"id\": 4,\"quantity\": 1231 }]}")}, request2, false},
+		{"empty request", args{mockRequest("")}, CartRequests{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -46,16 +46,11 @@ func (err *Error) Error() string {
 	return fmt.Sprintf("error: code=%s message=%s", http.StatusText(err.Code), err.Message)
 }
 
-// Converter para JSON
 func (err *Error) JSON() string {
 	if err == nil {
-		return ("{}")
-	}
-	res, e := json.Marshal(err)
-
-	if e != nil {
 		return "{}"
 	}
+	res, _ := json.Marshal(err)
 
 	return string(res)
 }

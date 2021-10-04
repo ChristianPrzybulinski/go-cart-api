@@ -1,0 +1,15 @@
+[{
+    "id": 1,
+    "title": "Ergonomic Wooden Pants",
+    "description": "Deleniti beatae porro.",
+    "amount": 15157,
+    "is_gift": false
+  },
+  {
+    "id": 2,
+    "title": "Ergonomic Cotton Keyboard",
+    "description": "Iste est ratione excepturi repellendus adipisci qui.",
+    "amount": 93811,
+    "is_gift": true
+  }
+]
