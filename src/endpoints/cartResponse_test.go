@@ -13,7 +13,7 @@ func TestCartResponse_JSON(t *testing.T) {
 		wantErr bool
 	}{
 		{"working case 1", CartResponse{TotalAmount: 100, TotalAmountWithDiscount: 50, TotalDiscount: 50,
-			Products: []ResponseProduct{{ID: 1, Quantity: 1, UnitAmount: 100, TotalAmount: 100, Discount: 50, IsGift: false}}}, getMockJSON("unitTestData/responses/1.json"), false},
+			Products: []ResponseProduct{{ID: 1, Quantity: 1, UnitAmount: 100, TotalAmount: 100, Discount: 50, IsGift: false}}}, getMockJSON("unitTestData/responses/3.json"), false},
 		{"working case 2", CartResponse{TotalAmount: 200, TotalAmountWithDiscount: 150, TotalDiscount: 50,
 			Products: []ResponseProduct{{ID: 1, Quantity: 1, UnitAmount: 100, TotalAmount: 100, Discount: 50, IsGift: false},
 				{ID: 2, Quantity: 1, UnitAmount: 100, TotalAmount: 100, Discount: 0, IsGift: true}}}, getMockJSON("unitTestData/responses/2.json"), false},
@@ -101,6 +101,16 @@ func TestCartEndpoint_handleResponse(t *testing.T) {
 	cartrequests4 := CartRequests{CartRequest: []CartRequest{
 		{Id: 4, Quantity: 1}}}
 
+	cartrequests5 := CartRequests{CartRequest: []CartRequest{
+		{Id: 2, Quantity: 4},
+		{Id: 1, Quantity: 1},
+		{Id: 2, Quantity: 4},
+	}}
+	cartresponse5 := CartResponse{TotalAmount: 765645, TotalAmountWithDiscount: 765645, TotalDiscount: 0,
+		Products: []ResponseProduct{
+			{ID: 1, Quantity: 1, UnitAmount: 15157, TotalAmount: 15157, IsGift: false},
+			{ID: 2, Quantity: 8, UnitAmount: 93811, TotalAmount: 750488, IsGift: false}}}
+
 	tests := []struct {
 		name    string
 		cart    CartEndpoint
@@ -112,6 +122,7 @@ func TestCartEndpoint_handleResponse(t *testing.T) {
 		{"working case 2", mockCartEndpoint(false), args{cartrequests2}, cartresponse2, false},
 		{"black friday", mockCartEndpoint(true), args{cartrequests3}, cartresponse3, false},
 		{"error", mockCartEndpoint(true), args{cartrequests4}, CartResponse{}, true},
+		{"using map strategy", mockCartEndpoint(false), args{cartrequests5}, cartresponse5, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

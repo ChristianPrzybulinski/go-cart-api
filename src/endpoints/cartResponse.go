@@ -45,8 +45,9 @@ func (cart CartEndpoint) handleResponse(requests CartRequests) (CartResponse, er
 
 			if v, found := productMap[rProduct.ID]; found {
 				v.TotalAmount = v.TotalAmount + rProduct.TotalAmount
-				v.TotalAmount = v.Quantity + rProduct.Quantity
-				v.TotalAmount = v.Discount + rProduct.Discount
+				v.Quantity = v.Quantity + rProduct.Quantity
+				v.Discount = v.Discount + rProduct.Discount
+				productMap[rProduct.ID] = v
 			} else {
 				productMap[rProduct.ID] = rProduct
 			}
@@ -78,7 +79,7 @@ func (cart CartEndpoint) handleProductRequest(r CartRequest) (ResponseProduct, b
 
 	if val, ok := cart.Database[r.Id]; ok {
 
-		dPercentage := discount.DescountPercentage(cart.DiscountServiceAddress, int32(r.Id))
+		dPercentage := discount.DescountPercentage(cart.DiscountServiceAddress, int32(r.Id), cart.DiscountServiceTimeout)
 		discountTotal := math.Round(float64(float32(val.Amount*r.Quantity) * dPercentage))
 		return ResponseProduct{r.Id, r.Quantity, val.Amount, val.Amount * r.Quantity, int(discountTotal), false}, true
 	}

@@ -1,0 +1,39 @@
+{
+    "total_amount": 3080663,
+    "total_amount_with_discount": 3080663,
+    "total_discount": 0,
+    "products": [
+        {
+            "id": 1,
+            "quantity": 4,
+            "unit_amount": 15157,
+            "total_amount": 60628,
+            "discount": 0,
+            "is_gift": false
+        },
+        {
+            "id": 2,
+            "quantity": 25,
+            "unit_amount": 93811,
+            "total_amount": 2345275,
+            "discount": 0,
+            "is_gift": false
+        },
+        {
+            "id": 4,
+            "quantity": 12,
+            "unit_amount": 56230,
+            "total_amount": 674760,
+            "discount": 0,
+            "is_gift": false
+        },
+        {
+            "id": 6,
+            "quantity": 1,
+            "unit_amount": 0,
+            "total_amount": 0,
+            "discount": 0,
+            "is_gift": true
+        }
+    ]
+}

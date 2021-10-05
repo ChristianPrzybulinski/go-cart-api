@@ -22,12 +22,9 @@ func Test_handleRequest(t *testing.T) {
 		want    CartRequests
 		wantErr bool
 	}{
-		{"Valid request", args{mockRequest("{\"products\": [{\"id\": 1,\"quantity\": 1 }]}")}, request1, false},
-		{"invalid request", args{mockRequest("{\"saaaa\": \"id\": 1,\"quantity\": 1 }]}")}, CartRequests{}, true},
-		{"invalid request 2", args{mockRequest("{\"asdsadasdas\": [{\"id\": 1,\"quantity\": 1 }]}")}, CartRequests{}, true},
-		{"invalid request 3", args{mockRequest("{\"products\": [{\"aaa\": 1,\"quantity\": 1 }]}")}, CartRequests{}, true},
-		{"invalid request 3", args{mockRequest("{\"products\": [{\"id\": 1,\"quantity\": asda }]}")}, CartRequests{}, true},
-		{"Double requests", args{mockRequest("{\"products\": [{\"id\": 1,\"quantity\": 1 }, {\"id\": 4,\"quantity\": 1231 }]}")}, request2, false},
+		{"Valid request", args{mockRequest(getMockJSON("unitTestData/requests/1.json"))}, request1, false},
+		{"invalid request", args{mockRequest(getMockJSON("unitTestData/requests/3.json"))}, CartRequests{}, true},
+		{"Double requests", args{mockRequest(getMockJSON("unitTestData/requests/2.json"))}, request2, false},
 		{"empty request", args{mockRequest("")}, CartRequests{}, true},
 	}
 	for _, tt := range tests {

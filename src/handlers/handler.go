@@ -21,7 +21,11 @@ func StartServer(port string, products map[int]database.Product) {
 
 func SetupHandlers(router *mux.Router, products map[int]database.Product) {
 
-	cartEndpoint := endpoints.NewCartEndpoint(products, os.Getenv("DISCOUNT_SERVICE_HOST"), os.Getenv("DISCOUNT_SERVICE_PORT"), os.Getenv("BLACK_FRIDAY"))
+	cartEndpoint := endpoints.NewCartEndpoint(products,
+		os.Getenv("DISCOUNT_SERVICE_HOST"),
+		os.Getenv("DISCOUNT_SERVICE_PORT"),
+		os.Getenv("DISCOUNT_SERVICE_TIMEOUT"),
+		os.Getenv("BLACK_FRIDAY"))
 
 	router.HandleFunc("/cart", cartEndpoint.Post).Methods(http.MethodPost)
 	log.Infoln("Endpoint /cart active.")

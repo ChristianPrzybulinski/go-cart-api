@@ -1,12 +1,11 @@
 package endpoints
 
 import (
-	"bytes"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +13,40 @@ import (
 	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/errors"
 )
+
+func TestNewCartEndpoint(t *testing.T) {
+	type args struct {
+		database        map[int]database.Product
+		discountHost    string
+		discountPort    string
+		discountTimeout string
+		blackFriday     string
+	}
+	tests := []struct {
+		name string
+		args args
+		want Endpoint
+	}{
+		{"test 1", args{make(map[int]database.Product), "test", "123", "2", "2021-10-23"},
+			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: "test:123", DiscountServiceTimeout: 2, BlackFriday: "2021-10-23"}},
+
+		{"test 2", args{make(map[int]database.Product), "", "444", "50", ""},
+			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: ":444", DiscountServiceTimeout: 50, BlackFriday: ""}},
+
+		{"test 3", args{make(map[int]database.Product), "testing", "", "", ""},
+			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: "testing:50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
+
+		{"test 4", args{make(map[int]database.Product), "", "", "0", ""},
+			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: ":50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewCartEndpoint(tt.args.database, tt.args.discountHost, tt.args.discountPort, tt.args.discountTimeout, tt.args.blackFriday); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewCartEndpoint() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func TestCartEndpoint_sendResponse(t *testing.T) {
 	type args struct {
@@ -43,26 +76,17 @@ func TestCartEndpoint_sendResponse(t *testing.T) {
 	}
 }
 
-func mockResponseWriter() http.ResponseWriter {
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "ping")
-	}
-
-	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
+func mockResponseWriter() *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
-	handler(w, req)
 
 	return w
 }
 
 func mockRequest(requestBody string) *http.Request {
 
-	httpposturl := "localhost:8080/api/v1/cart"
+	req := httptest.NewRequest("POST", "http://example.com/foo", strings.NewReader(requestBody))
 
-	request, _ := http.NewRequest("POST", httpposturl, bytes.NewBuffer([]byte(requestBody)))
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
-	return request
+	return req
 }
 
 func mockCartEndpoint(blackfriday bool) CartEndpoint {
@@ -98,4 +122,56 @@ func getMockJSON(file string) string {
 
 	defer jsonFile.Close()
 	return ""
+}
+
+func TestCartEndpoint_Post(t *testing.T) {
+	type args struct {
+		req  string
+		want string
+	}
+	tests := []struct {
+		name string
+		cart CartEndpoint
+		args args
+	}{
+		{"test 1", mockCartEndpoint(false), args{getMockJSON("unitTestData/requests/1.json"), getMockJSON("unitTestData/responses/1.json")}},
+		{"test 2", mockCartEndpoint(false), args{"unitTestData/requests/4.json", getMockJSON("unitTestData/responses/4.json")}},
+		{"test 3", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/5.json")}},
+		{"test 4", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/4.json"), getMockJSON("unitTestData/responses/4.json")}},
+		{"test 5", mockRealCartEndpoint("unitTestData/databases/1.json", true), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/6.json")}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			w, r := mockServer(tt.args.req)
+			tt.cart.Post(w, r)
+
+			resp := w.Result()
+			got, _ := ioutil.ReadAll(resp.Body)
+
+			if !reflect.DeepEqual(clearString(string(got)), clearString(tt.args.want)) {
+				t.Errorf("TestCartEndpoint_Post() = %v, want %v", clearString(string(got)), clearString(tt.args.want))
+			}
+		})
+	}
+}
+
+func mockServer(request string) (*httptest.ResponseRecorder, *http.Request) {
+	req := mockRequest(request)
+	w := mockResponseWriter()
+	return w, req
+}
+
+func mockRealCartEndpoint(file string, blackfriday bool) CartEndpoint {
+	var cart CartEndpoint
+	m, _ := database.GetAllProducts(file)
+
+	cart.Database = m
+
+	if blackfriday {
+		cart.BlackFriday = time.Now().Format("2006-01-02")
+	}
+
+	return cart
 }

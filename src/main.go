@@ -7,6 +7,7 @@ import (
 	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/handlers"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/utils"
+	"github.com/mcuadros/go-defaults"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,6 +17,8 @@ type Args struct {
 }
 
 func Init() Args {
+	var args Args
+	defaults.SetDefaults(&args)
 
 	if len(os.Args) <= 2 {
 		utils.InitLog(strings.ToLower(os.Getenv("LOG_LEVEL")))
@@ -23,7 +26,6 @@ func Init() Args {
 		utils.InitLog(strings.ToLower(os.Args[2]))
 	}
 
-	var args Args
 	if len(os.Args) <= 1 {
 		host := os.Getenv("API_HOST")
 		port := os.Getenv("API_PORT")

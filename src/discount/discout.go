@@ -8,7 +8,7 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
-func DescountPercentage(port string, product int32) float32 {
+func DescountPercentage(port string, product int32, timeout int) float32 {
 
 	var percentageResponse float32 = 0
 	var conn *grpc.ClientConn
@@ -19,7 +19,8 @@ func DescountPercentage(port string, product int32) float32 {
 
 	if err == nil {
 		client := NewDiscountClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second) //default 1 second timeout for tests
 
 		defer cancel()
 

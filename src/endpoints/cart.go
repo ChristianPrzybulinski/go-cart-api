@@ -2,7 +2,9 @@ package endpoints
 
 import (
 	"net/http"
+	"strconv"
 
+	"github.com/mcuadros/go-defaults"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
@@ -12,22 +14,32 @@ import (
 type CartEndpoint struct {
 	Database               map[int]database.Product
 	DiscountServiceAddress string `default:":50051"`
+	DiscountServiceTimeout int    `default:"1"`
 	BlackFriday            string `default:""`
 }
 
-func NewCartEndpoint(database map[int]database.Product, discountHost string, discountPort string, blackFriday string) Endpoint {
+func NewCartEndpoint(database map[int]database.Product, discountHost string, discountPort string, discountTimeout string, blackFriday string) Endpoint {
 	var c CartEndpoint
+	defaults.SetDefaults(&c)
 
 	c.Database = database
 	if len(discountHost) > 0 {
 		if len(discountPort) > 0 {
 			c.DiscountServiceAddress = discountHost + ":" + discountPort
 		} else {
-			c.DiscountServiceAddress = discountHost + c.DiscountServiceAddress
+			temp := c.DiscountServiceAddress
+			c.DiscountServiceAddress = discountHost + temp
 		}
 	} else {
 		if len(discountPort) > 0 {
 			c.DiscountServiceAddress = ":" + discountPort
+		}
+	}
+
+	if len(discountTimeout) > 0 {
+		timeout, err := strconv.Atoi(discountTimeout)
+		if (err == nil) && (timeout > 0) {
+			c.DiscountServiceTimeout = timeout
 		}
 	}
 
@@ -43,12 +55,15 @@ func NewCartEndpoint(database map[int]database.Product, discountHost string, dis
 
 func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	requests, err := cart.handleRequest(r)
-
+	var ok bool
 	if err == nil {
 		r, err := cart.handleResponse(requests)
-		ok := cart.sendResponse(w, r, err)
-		log.Infoln("The request was processed: ", ok)
+		ok = cart.sendResponse(w, r, err)
+
+	} else {
+		ok = cart.sendResponse(w, CartResponse{}, err)
 	}
+	log.Infoln("The request was processed: ", ok)
 }
 
 func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartResponse, err error) bool {
