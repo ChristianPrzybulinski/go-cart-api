@@ -32,10 +32,12 @@ func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 	}
 
 	if len(cartRequests.CartRequest) == 0 {
+		log.Debugln("Cart is empty!!")
 		err = errors.ErrEmptyCart
 	} else {
 		for _, c := range cartRequests.CartRequest {
 			if c.Id < 1 || c.Quantity < 1 {
+				log.Debugln("ID or Quantity < 1")
 				err = errors.ErrBadRequest
 			}
 

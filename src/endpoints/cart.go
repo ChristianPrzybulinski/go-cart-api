@@ -48,6 +48,7 @@ func NewCartEndpoint(database map[int]database.Product, discountHost string, dis
 	}
 
 	log.Infoln("Discount Service address: " + c.DiscountServiceAddress)
+	log.Infoln("Discount Service Timeout: ", c.DiscountServiceTimeout)
 	log.Infoln("Black Friday date: " + c.BlackFriday)
 
 	return c
@@ -70,12 +71,17 @@ func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartRespon
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if err == nil {
-		w.Write([]byte(response.JSON()))
+		responseJSON := response.JSON()
+		log.Infoln("/cart API Response: ", responseJSON)
+		w.Write([]byte(responseJSON))
+
 		return true
 	} else {
 		log.Errorln(err.Error())
 		w.WriteHeader(errors.GetError(err).StatusCode())
-		w.Write([]byte(errors.GetError(err).JSON()))
+		responseJSON := errors.GetError(err).JSON()
+		log.Infoln("/cart API Response: ", responseJSON)
+		w.Write([]byte(responseJSON))
 		return false
 	}
 }

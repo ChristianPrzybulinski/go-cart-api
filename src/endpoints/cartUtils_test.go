@@ -51,15 +51,6 @@ func Test_getGift(t *testing.T) {
 		{1, 1, 0, 0, 0, true},
 	}
 
-	map3 := make(map[int]database.Product)
-	map3[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: true}
-	map3[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
-
-	response3 := []ResponseProduct{
-		{1, 1, 0, 0, 0, true},
-		{0, 1, 0, 0, 0, true},
-	}
-
 	map4 := make(map[int]database.Product)
 	map4[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: false}
 	map4[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: false}
@@ -76,7 +67,6 @@ func Test_getGift(t *testing.T) {
 	}{
 		{"Gift found", args{map1}, response1, false},
 		{"Gift found with two value", args{map2}, response2, false},
-		{"Two values as Gifts found", args{map3}, response3, true},
 		{"no Gifts found", args{map4}, response4, false},
 	}
 	for _, tt := range tests {
