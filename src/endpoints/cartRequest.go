@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Endpoints package
+//Package endpoints
 package endpoints
 
 import (
@@ -13,18 +13,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Struct to Represent each Product Request from the Cart API
+//CartRequest struct to Represent each Product Request from the Cart API
 type CartRequest struct {
 	ID       int `json:"id"`
 	Quantity int `json:"quantity"`
 }
 
-//Struct the reprents a list of Product Request from the Cart API
+//CartRequests struct the reprents a list of Product Request from the Cart API
 type CartRequests struct {
 	CartRequest []CartRequest `json:"products"`
 }
 
-//An Internal CartEndpoint method to handle the JSON request
+//handleRequest is an Internal CartEndpoint method to handle the JSON request
 //Transform the JSON into the struct CartRequests
 func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 	var cartRequests CartRequests

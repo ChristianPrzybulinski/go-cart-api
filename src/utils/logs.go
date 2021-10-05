@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Utils package
+//Package utils
 package utils
 
 import (
@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Start the logrus log setting up a log level, being info the default
+//InitLog starts the logrus log setting up a log level, being info the default
 func InitLog(logLevel string) {
 	log.SetOutput(os.Stdout)
 

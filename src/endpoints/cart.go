@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Endpoints package
+//Package endpoints
 package endpoints
 
 import (
@@ -15,7 +15,7 @@ import (
 	"github.com/ChristianPrzybulinski/go-cart-api/src/errors"
 )
 
-//Struct that represents the CardEndpoints envvars and Database
+//CartEndpoint struct that represents the CardEndpoints envvars and Database
 type CartEndpoint struct {
 	Database               map[int]database.Product
 	DiscountServiceAddress string `default:":50051"`
@@ -23,7 +23,7 @@ type CartEndpoint struct {
 	BlackFriday            string `default:""`
 }
 
-//Initialize the Endpoint, setting the envvars inside the struct or its default values
+//NewCartEndpoint initialize the Endpoint, setting the envvars inside the struct or its default values
 //For each parameters, its checked if its empty, in case true we use the default value
 func NewCartEndpoint(databasePath string, discountHost string, discountPort string, discountTimeout string, blackFriday string) Endpoint {
 	var c CartEndpoint
@@ -73,7 +73,7 @@ func NewCartEndpoint(databasePath string, discountHost string, discountPort stri
 	return c
 }
 
-//Method that handle the Post Request and Send the Response
+//Post Method that handle the Post Request and Send the Response
 func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	requests, err := cart.handleRequest(r)
 	var ok bool
@@ -87,7 +87,7 @@ func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	log.Infoln("The request was processed: ", ok)
 }
 
-//Method to Write the response back to the client, error or success (JSON)
+//sendResponse writes the response back to the client, error or success (JSON)
 func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartResponse, err error) bool {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 

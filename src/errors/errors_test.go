@@ -93,7 +93,7 @@ func TestError_StatusCode(t *testing.T) {
 	}
 }
 
-//utils method to clear all spaces and newlines to compare
+//clearString utils method to clear all spaces and newlines to compare
 func clearString(str string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(str, " ", ""), "\n", ""), "\r", ""), "\t", "")
 }

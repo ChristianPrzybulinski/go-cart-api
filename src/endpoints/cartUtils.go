@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Endpoints package
+//Package endpoints
 package endpoints
 
 import (
@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Used to get a Gift from the database, it will return as default the first one that it finds (no order implemented)
+//getGift is used to get a Gift from the database, it will return as default the first one that it finds (no order implemented)
 func getGift(database map[int]database.Product) ResponseProduct {
 
 	for _, r := range database {
@@ -24,7 +24,7 @@ func getGift(database map[int]database.Product) ResponseProduct {
 	return ResponseProduct{}
 }
 
-//Check if the date received is today, the date format is YYYY-MM-DD
+//isBlackFriday checks if the date received is today, the date format is YYYY-MM-DD
 func isBlackFriday(blackFriday string) bool {
 
 	if len(blackFriday) == 0 {
@@ -36,7 +36,7 @@ func isBlackFriday(blackFriday string) bool {
 
 }
 
-//Transform a Map back to a Slice and order ascending by ID
+//mapToSlice transforms a Map back to a Slice and order ascending by ID
 func mapToSlice(mapProduct map[int]ResponseProduct) []ResponseProduct {
 	var response []ResponseProduct
 

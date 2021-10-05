@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Endpoints package
+//Package endpoints
 package endpoints
 
 import (
@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Struct to represent a Response from the Cart API
+//CartResponse struct to represent a Response from the Cart API
 type CartResponse struct {
 	TotalAmount             int               `json:"total_amount"`
 	TotalAmountWithDiscount int               `json:"total_amount_with_discount"`
@@ -22,7 +22,7 @@ type CartResponse struct {
 	Products                []ResponseProduct `json:"products"`
 }
 
-//Struct to represent the Product inside the response from the Cart API
+//ResponseProduct struct to represent the Product inside the response from the Cart API
 type ResponseProduct struct {
 	ID          int  `json:"id"`
 	Quantity    int  `json:"quantity"`
@@ -32,7 +32,7 @@ type ResponseProduct struct {
 	IsGift      bool `json:"is_gift"`
 }
 
-//An Internal CartEndpoint method that receives the Requests and will return the Response or error
+//handleResponse is an Internal CartEndpoint method that receives the Requests and will return the Response or error
 func (cart CartEndpoint) handleResponse(requests CartRequests) (CartResponse, error) {
 	var response CartResponse
 
@@ -86,7 +86,7 @@ func (cart CartEndpoint) handleResponse(requests CartRequests) (CartResponse, er
 	return CartResponse{}, errors.ErrEmptyCart
 }
 
-//Submethod that handle one Product Request, returning it with the discount and maths already applied
+//handleProductRequest is a submethod that handle one Product Request, returning it with the discount and maths already applied
 func (cart CartEndpoint) handleProductRequest(r CartRequest) (ResponseProduct, bool) {
 
 	if val, ok := cart.Database[r.ID]; ok {
@@ -100,7 +100,7 @@ func (cart CartEndpoint) handleProductRequest(r CartRequest) (ResponseProduct, b
 	return ResponseProduct{}, false
 }
 
-//Transform the Response into a JSON
+//JSON transforms the Response into a JSON
 func (c CartResponse) JSON() string {
 	res, _ := json.Marshal(c)
 	var out bytes.Buffer

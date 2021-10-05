@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//package used to generate the gRPC client and call the discount service
+//Package discount used to generate the gRPC client and call the discount service
 package discount
 
 import (
@@ -12,7 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
-//Method that uses the generated gRPC client and call the GetDiscount to retrieve 0 or 0.05 percentage
+//DescountPercentage uses the generated gRPC client and call the GetDiscount to retrieve 0 or 0.05 percentage
 //In case the service is offline or we can't reach it for any reason, it will return 0
 func DescountPercentage(port string, product int32, timeout int) float32 {
 

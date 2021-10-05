@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-// Package containing the handlers that are gonna be used in the API Server
+// Package handlers contains the handlers that are gonna be used in the API Server
 package handlers
 
 import (
@@ -14,13 +14,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//Used to define the API Address (Server:Port) and the DatabasePath since we are using internal json files as our database
+//Args is used to define the API Address (Server:Port) and the DatabasePath since we are using internal json files as our database
 type Args struct {
 	APIAddress   string `default:":8080"`
 	DatabasePath string `default:"./database"`
 }
 
-//Method that start the server, calling the handlers configured and listening in the address received inside the struct
+//StartServer method start the server, calling the handlers configured and listening in the address received inside the struct
 func StartServer(args Args) {
 	router := mux.NewRouter().PathPrefix("/api/v1/").Subrouter() //sets up a router with /api/v1/ as default path for all APIs
 	SetupHandlers(router, args)
@@ -29,7 +29,7 @@ func StartServer(args Args) {
 	http.ListenAndServe(args.APIAddress, router)
 }
 
-//Define the handlers that the API has, for now the only one is /cart
+//SetupHandler defines the handlers that the API has, for now the only one is /cart
 func SetupHandlers(router *mux.Router, args Args) {
 
 	cartEndpoint := endpoints.NewCartEndpoint(args.DatabasePath,

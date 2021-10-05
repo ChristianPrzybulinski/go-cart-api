@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//main package
+//Package main
 package main
 
 import (
@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Used to init all the parameters and envvars used in the API
+//Init used to init all the parameters and envvars used in the API
 //Get args passed in the command line:
 //1: API ADDRESS (host:port) ~ 2: Log Level (info,debug,warn,error) 3: Database Path (filesystem path)
 func Init() handlers.Args {
@@ -60,7 +60,7 @@ func Init() handlers.Args {
 	return args
 }
 
-//start the server
+//main method to start the server
 func main() {
 
 	args := Init()

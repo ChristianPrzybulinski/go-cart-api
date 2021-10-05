@@ -1,5 +1,6 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
+
 package utils
 
 import (

@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//database package used to configure the JSONs files as database
+//Package database used to configure the JSONs files as database
 package database
 
 import (
@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Database Product, used to read the JSON file and convert to struct
+//Product used to read the JSON file and convert to struct
 type Product struct {
 	ID          int    `json:"ID"`
 	Title       string `json:"title"`
@@ -21,7 +21,7 @@ type Product struct {
 	IsGift      bool   `json:"is_gift"`
 }
 
-//Read the JSON Database file and transform it to an internal Map, ID = key
+//GetAllProducts reads the JSON Database file and transform it to an internal Map, ID = key
 func GetAllProducts(file string) (map[int]Product, error) {
 
 	log.Debugln("Loading Json File: " + file)
@@ -35,7 +35,7 @@ func GetAllProducts(file string) (map[int]Product, error) {
 
 }
 
-//as the name says, transform the json received to a map of products
+//jsonToMap as the name says, transform the json received to a map of products
 func jsonToMap(jsonFile []byte) (map[int]Product, error) {
 	var products []Product
 
@@ -61,7 +61,7 @@ func jsonToMap(jsonFile []byte) (map[int]Product, error) {
 
 }
 
-//read the json file and return its content
+//loadProducts reads the json file and return its content
 func loadProducts(file string) ([]byte, error) {
 	jsonFile, err := os.Open(file)
 

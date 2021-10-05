@@ -9,13 +9,13 @@ import (
 	"testing"
 )
 
-//struct used in the unit tests
+//mocks struct used in the unit tests
 type mocks struct {
 	mockJSON   string
 	mockStruct []Product
 }
 
-//used to mock multiple single json item to map
+//mockMaps used to mock multiple single json item to map
 func mockMaps(id []int, title []string, desc []string, amount []int, gift []bool) mocks {
 	var products []Product
 
@@ -41,7 +41,7 @@ func mockMaps(id []int, title []string, desc []string, amount []int, gift []bool
 	return mocks{jsonString, products}
 }
 
-//used to mock one single json item to map
+//mockMap used to mock one single json item to map
 func mockMap(id int, title string, desc string, amount int, gift bool) mocks {
 
 	product := []Product{{id, title, desc, amount, gift}}
@@ -57,7 +57,7 @@ func mockMap(id int, title string, desc string, amount int, gift bool) mocks {
 	return mocks{jsonString, product}
 }
 
-//used to mock a database json with error
+//mockMapWithError used to mock a database json with error
 func mockMapWithError(id int, title string, desc string, amount int, gift bool) mocks {
 
 	product := []Product{{id, title, desc, amount, gift}}
@@ -71,7 +71,7 @@ func mockMapWithError(id int, title string, desc string, amount int, gift bool) 
 	return mocks{jsonString, product}
 }
 
-//return the mocks to test
+//getMocks return the mocks to test
 func getMocks() []mocks {
 
 	mockData := []mocks{

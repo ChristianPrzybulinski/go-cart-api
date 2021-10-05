@@ -79,14 +79,14 @@ func TestCartEndpoint_sendResponse(t *testing.T) {
 	}
 }
 
-//we mock a responseWriter to use
+//mockResponseWriter mock a responseWriter to use
 func mockResponseWriter() *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
 
 	return w
 }
 
-//we mock a HttpRequest to use
+//mockRequest mock a HttpRequest to use
 func mockRequest(requestBody string) *http.Request {
 
 	req := httptest.NewRequest("POST", "http://example.com/foo", strings.NewReader(requestBody))
@@ -94,7 +94,7 @@ func mockRequest(requestBody string) *http.Request {
 	return req
 }
 
-//we mock a CartEndpoint with some default database values and passing if we want black friday or not
+//mockCartEndpoint mock a CartEndpoint with some default database values and passing if we want black friday or not
 func mockCartEndpoint(blackfriday bool) CartEndpoint {
 	var cart CartEndpoint
 	cart.Database = make(map[int]database.Product)
@@ -109,12 +109,12 @@ func mockCartEndpoint(blackfriday bool) CartEndpoint {
 	return cart
 }
 
-//clear the whitespaces and newlines to compare
+//clearString clear the whitespaces and newlines to compare
 func clearString(str string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(str, " ", ""), "\n", ""), "\r", ""), "\t", "")
 }
 
-//read the file (path) informed and return it as a string (used to read the file that contains the json content)
+//getMockJSON reads the file (path) informed and return it as a string (used to read the file that contains the json content)
 func getMockJSON(file string) string {
 	var jsonResponse []byte
 
@@ -165,14 +165,14 @@ func TestCartEndpoint_Post(t *testing.T) {
 	}
 }
 
-//mocks a response and request to use
+//mockServer mocks a response and request to use
 func mockServer(request string) (*httptest.ResponseRecorder, *http.Request) {
 	req := mockRequest(request)
 	w := mockResponseWriter()
 	return w, req
 }
 
-//mocks a CartEndpoint with a real database file json, and using blackfriday true or false as a parameter
+//mockRealCartEndpoint mocks a CartEndpoint with a real database file json, and using blackfriday true or false as a parameter
 func mockRealCartEndpoint(file string, blackfriday bool) CartEndpoint {
 	var cart CartEndpoint
 	m, _ := database.GetAllProducts(file)
