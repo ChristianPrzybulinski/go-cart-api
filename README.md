@@ -143,6 +143,8 @@ The API uses some enviromnent variables, they are all provided in the **.env** f
 
 I suggest to clone the repo, so you can have all files and project. But you only need the `docker-compose.yml` and the `.env` provided to start up the service. In case you setted the enviromnent variables manually, you won't need the `.env` file.
 
+**Note:** In case you're using the default values for the enviromnent variables, you will need to edit the `docker-compose.yml` filling up the {APP_PATH} to any path you want, {API_PORT} to 8080 and {DISCOUNT_SERVICE_PORT} to 50051.
+
 Starting the service: 
 
 ```
@@ -166,18 +168,30 @@ docker run --env-file=.env christianprzybulinski/go-cart-api
 
 docker run -p 50051:50051 hashorg/hash-mock-discount-service
 ```
-You can skip the `--env-file` parameter in case you manually configured the enviromnent variables.
+You can skip the `--env-file` parameter in case you manually configured the enviromnent variables or want to use their default values.
 
 ### Through Repo:
 
-**Note:** You won't have the Discount Service. Unless you start a Docker container with it. More importantly, you will need to install GO.
+**Note:** You won't have the Discount Service. Unless you start a Docker container with it. More importantly, you will need to have GO installed.
 
-1. Clone the repo
-2. Inside the go-cart-api/src folder
-2. Run the application:
-
+1. Clone the repo;
+2. Inside the go-cart-api/src folder;
+3. You can provide three arguments to run the application (overwriting env vars);
 ```
-go run . 
+$1 = hostname:port, hostname, port
+Example: localhost:8080
+
+$2 = info, debug, warn, error
+Example: debug
+
+$3 = the database path
+Example: /database
+```
+
+4. Run the application: 
+```
+go run . $1 $2 $3
+Example: go run . 8080 debug
 ```
 
 *Note: $GOPATH might need to be configured.*
@@ -186,7 +200,7 @@ go run .
 
 You can test the API Endpoint with any software that provides you a HTPP POST request to be made. I'll be showing the easiest one since you probably already have everything installed.
 
-**Note:** The endpoint will be available at the $API_HOST:$API_PORT/api/v1/cart. In case you used the `.env` file or the default settings, It is going to be as the example below.
+**Note:** The endpoint will be available at the `$API_HOST:$API_PORT/api/v1/cart`. In case you used the `.env` file or the default settings, It is going to be as the example below.
 
 ## cURL
 
@@ -195,3 +209,7 @@ I recommend using the sample files provided inside the *samples* folder.
 ```
 curl -X POST -d "@samples/1.json" "localhost:8080/api/v1/cart"
 ```
+
+**Final Note:** The database JSON name must be `products.json` in case you want to use your own database file.
+
+## That's all folks. Thank you!
