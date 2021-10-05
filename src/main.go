@@ -47,7 +47,7 @@ func Init() handlers.Args {
 		args.APIAddress = os.Args[1]
 	}
 
-	if len(os.Args) <= 2 {
+	if len(os.Args) <= 3 {
 		db := os.Getenv("DATABASE_PATH")
 
 		if len(db) > 0 {
