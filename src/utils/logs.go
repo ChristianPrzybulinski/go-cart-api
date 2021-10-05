@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Package utils
+//Package utils used to general code
 package utils
 
 import (

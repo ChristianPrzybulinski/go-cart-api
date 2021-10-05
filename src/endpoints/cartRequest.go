@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-//Package endpoints
+//Package endpoints used to setup the endpoints logic
 package endpoints
 
 import (

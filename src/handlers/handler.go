@@ -1,7 +1,7 @@
 // Copyright Christian Przybulinski
 // All Rights Reserved
 
-// Package handlers contains the handlers that are gonna be used in the API Server
+//Package handlers contains the handlers that are gonna be used in the API Server
 package handlers
 
 import (
@@ -29,7 +29,7 @@ func StartServer(args Args) {
 	http.ListenAndServe(args.APIAddress, router)
 }
 
-//SetupHandler defines the handlers that the API has, for now the only one is /cart
+//SetupHandlers defines the handlers that the API has, for now the only one is /cart
 func SetupHandlers(router *mux.Router, args Args) {
 
 	cartEndpoint := endpoints.NewCartEndpoint(args.DatabasePath,
