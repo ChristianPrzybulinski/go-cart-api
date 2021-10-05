@@ -1,7 +1,7 @@
-package handlers
+package endpoints
 
 import "net/http"
 
-type EventHandler interface {
+type Endpoint interface {
 	Post(w http.ResponseWriter, r *http.Request)
 }

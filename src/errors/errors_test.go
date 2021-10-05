@@ -3,6 +3,7 @@ package errors
 import (
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -54,15 +55,15 @@ func TestError_JSON(t *testing.T) {
 		err  *Error
 		want string
 	}{
-		{"ErrNotFound", ErrNotFound, "{\"Code\":404,\"Message\":\"Not Found (404)\"}"},
-		{"StatusInternalServerError", ErrInternal, "{\"Code\":500,\"Message\":\"Internal Server Error (500)\"}"},
-		{"StatusBadRequest", ErrBadRequest, "{\"Code\":400,\"Message\":\"Bad Request (400)\"}"},
+		{"ErrNotFound", ErrNotFound, "{\"code\":404,\"message\":\"Not Found (404)\"}"},
+		{"StatusInternalServerError", ErrInternal, "{\"code\":500,\"message\":\"Internal Server Error (500)\"}"},
+		{"StatusBadRequest", ErrBadRequest, "{\"code\":400,\"message\":\"Bad Request (400)\"}"},
 		{"nulo", nil, "{}"},
-		{"Empty cart", ErrEmptyCart, "{\"Code\":400,\"Message\":\"Bad Request (400) - Empty Cart / no Product found!\"}"},
+		{"Empty cart", ErrEmptyCart, "{\"code\":400,\"message\":\"Bad Request (400) - Empty Cart / no Product found!\"}"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.err.JSON(); got != tt.want {
+			if got := tt.err.JSON(); clearString(got) != clearString(tt.want) {
 				t.Errorf("Error.JSON() = %v, want %v", got, tt.want)
 			}
 		})
@@ -87,4 +88,8 @@ func TestError_StatusCode(t *testing.T) {
 			}
 		})
 	}
+}
+
+func clearString(str string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(str, " ", ""), "\n", ""), "\r", ""), "\t", "")
 }

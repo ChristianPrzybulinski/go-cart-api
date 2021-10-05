@@ -1,33 +1,32 @@
 package endpoints
 
 import (
+	"bytes"
 	"encoding/json"
 	"math"
-	"os"
 
-	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/discount"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/errors"
 	log "github.com/sirupsen/logrus"
 )
 
 type CartResponse struct {
-	TotalAmount             int
-	TotalAmountWithDiscount int
-	TotalDiscount           int
-	Products                []ResponseProduct
+	TotalAmount             int               `json:"total_amount"`
+	TotalAmountWithDiscount int               `json:"total_amount_with_discount"`
+	TotalDiscount           int               `json:"total_discount"`
+	Products                []ResponseProduct `json:"products"`
 }
 
 type ResponseProduct struct {
-	ID          int
-	Quantity    int
-	UnitAmount  int
-	TotalAmount int
-	Discount    int
-	IsGift      bool
+	ID          int  `json:"id"`
+	Quantity    int  `json:"quantity"`
+	UnitAmount  int  `json:"unit_amount"`
+	TotalAmount int  `json:"total_amount"`
+	Discount    int  `json:"discount"`
+	IsGift      bool `json:"is_gift"`
 }
 
-func handleResponse(requests CartRequests, database map[int]database.Product) (CartResponse, error) {
+func (cart CartEndpoint) handleResponse(requests CartRequests) (CartResponse, error) {
 	var response CartResponse
 	var productMap map[int]ResponseProduct = make(map[int]ResponseProduct)
 
@@ -38,7 +37,7 @@ func handleResponse(requests CartRequests, database map[int]database.Product) (C
 	for _, r := range requests.CartRequest {
 		log.Debugln("Processing request ID: ", r.Id)
 
-		rProduct, ok := handleProductRequest(r, database)
+		rProduct, ok := cart.handleProductRequest(r)
 		if ok {
 			response.TotalAmount = response.TotalAmount + rProduct.TotalAmount
 			response.TotalAmountWithDiscount = response.TotalAmountWithDiscount + (rProduct.TotalAmount - rProduct.Discount)
@@ -61,8 +60,8 @@ func handleResponse(requests CartRequests, database map[int]database.Product) (C
 	productSlice := mapToSlice(productMap)
 
 	if len(productMap) > 0 {
-		if isBlackFriday(os.Getenv("BLACK_FRIDAY")) {
-			rGift := getGift(database)
+		if isBlackFriday(cart.BlackFriday) {
+			rGift := getGift(cart.Database)
 			if (rGift != ResponseProduct{}) {
 				log.Debugln("Adding gift to the cart, BLACK FRIDAY baby")
 				productSlice = append(productSlice, rGift)
@@ -75,21 +74,11 @@ func handleResponse(requests CartRequests, database map[int]database.Product) (C
 	return CartResponse{}, errors.ErrEmptyCart
 }
 
-func handleProductRequest(r CartRequest, database map[int]database.Product) (ResponseProduct, bool) {
+func (cart CartEndpoint) handleProductRequest(r CartRequest) (ResponseProduct, bool) {
 
-	if val, ok := database[r.Id]; ok {
+	if val, ok := cart.Database[r.Id]; ok {
 
-		discountHost := os.Getenv("DISCOUNT_SERVICE_HOST")
-		discountPort := os.Getenv("DISCOUNT_SERVICE_PORT")
-
-		if len(discountHost) == 0 {
-			discountHost = ":"
-		}
-		if len(discountPort) == 0 {
-			discountPort = "50051"
-		}
-
-		dPercentage := discount.DescountPercentage(discountHost+discountPort, int32(r.Id))
+		dPercentage := discount.DescountPercentage(cart.DiscountServiceAddress, int32(r.Id))
 		discountTotal := math.Round(float64(float32(val.Amount*r.Quantity) * dPercentage))
 		return ResponseProduct{r.Id, r.Quantity, val.Amount, val.Amount * r.Quantity, int(discountTotal), false}, true
 	}
@@ -98,13 +87,11 @@ func handleProductRequest(r CartRequest, database map[int]database.Product) (Res
 	return ResponseProduct{}, false
 }
 
-func (c CartResponse) JSON() (string, error) {
-	res, err := json.Marshal(c)
+func (c CartResponse) JSON() string {
+	res, _ := json.Marshal(c)
+	var out bytes.Buffer
 
-	if err == nil {
-		return string(res), nil
-	} else {
-		return "", err
-	}
+	json.Indent(&out, res, "", "  ")
+	return out.String()
 
 }

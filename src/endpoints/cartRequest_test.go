@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"bytes"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,6 +10,8 @@ func Test_handleRequest(t *testing.T) {
 	type args struct {
 		r *http.Request
 	}
+
+	var cartEndpoint CartEndpoint
 
 	request1 := CartRequests{[]CartRequest{{1, 1}}}
 	request2 := CartRequests{[]CartRequest{{1, 1}, {4, 1231}}}
@@ -31,7 +32,7 @@ func Test_handleRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := handleRequest(tt.args.r)
+			got, err := cartEndpoint.handleRequest(tt.args.r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("handleRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -42,14 +43,4 @@ func Test_handleRequest(t *testing.T) {
 
 		})
 	}
-}
-
-func mockRequest(requestBody string) *http.Request {
-
-	httpposturl := "localhost:8080/api/v1/cart"
-
-	request, _ := http.NewRequest("POST", httpposturl, bytes.NewBuffer([]byte(requestBody)))
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
-	return request
 }

@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -26,8 +27,8 @@ var (
 )
 
 type Error struct {
-	Code    int
-	Message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 func GetError(e error) *Error {
@@ -47,12 +48,14 @@ func (err *Error) Error() string {
 }
 
 func (err *Error) JSON() string {
+	var out bytes.Buffer
 	if err == nil {
 		return "{}"
 	}
 	res, _ := json.Marshal(err)
 
-	return string(res)
+	json.Indent(&out, res, "", "  ")
+	return out.String()
 }
 
 func (err *Error) StatusCode() int {

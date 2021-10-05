@@ -18,7 +18,7 @@ type CartRequests struct {
 	CartRequest []CartRequest `json:"products"`
 }
 
-func handleRequest(r *http.Request) (CartRequests, error) {
+func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 	var cartRequests CartRequests
 	body, err := ioutil.ReadAll(r.Body)
 
