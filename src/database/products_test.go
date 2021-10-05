@@ -1,3 +1,6 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
 package database
 
 import (
@@ -6,11 +9,13 @@ import (
 	"testing"
 )
 
+//struct used in the unit tests
 type mocks struct {
-	mockJson   string
+	mockJSON   string
 	mockStruct []Product
 }
 
+//used to mock multiple single json item to map
 func mockMaps(id []int, title []string, desc []string, amount []int, gift []bool) mocks {
 	var products []Product
 
@@ -29,13 +34,14 @@ func mockMaps(id []int, title []string, desc []string, amount []int, gift []bool
 			strconv.Itoa(amount[i]) + ", \"is_gift\": " +
 			strconv.FormatBool(gift[i]) +
 			"}"
-	}
+	} //since we need to test the read method too, we need to mock it as a string internally
 
 	jsonString = jsonString + "]"
 
 	return mocks{jsonString, products}
 }
 
+//used to mock one single json item to map
 func mockMap(id int, title string, desc string, amount int, gift bool) mocks {
 
 	product := []Product{{id, title, desc, amount, gift}}
@@ -46,11 +52,12 @@ func mockMap(id int, title string, desc string, amount int, gift bool) mocks {
 		desc + "\", \"amount\": " +
 		strconv.Itoa(amount) + ", \"is_gift\": " +
 		strconv.FormatBool(gift) +
-		"}]"
+		"}]" //since we need to test the read method too, we need to mock it as a string internally
 
 	return mocks{jsonString, product}
 }
 
+//used to mock a database json with error
 func mockMapWithError(id int, title string, desc string, amount int, gift bool) mocks {
 
 	product := []Product{{id, title, desc, amount, gift}}
@@ -59,11 +66,12 @@ func mockMapWithError(id int, title string, desc string, amount int, gift bool) 
 		strconv.Itoa(id) + ", \"title\": \"" +
 		title + "\", \"description\": " +
 		strconv.Itoa(amount) + ", \"is_gift\": " +
-		"}]"
+		"}]" //since we need to test the read method too, we need to mock it as a string internally
 
 	return mocks{jsonString, product}
 }
 
+//return the mocks to test
 func getMocks() []mocks {
 
 	mockData := []mocks{
@@ -85,7 +93,7 @@ func Test_jsonToMap(t *testing.T) {
 
 	productMap := map[int]Product{}
 	for _, product := range mocksData[2].mockStruct {
-		productMap[product.Id] = product
+		productMap[product.ID] = product
 	}
 
 	tests := []struct {
@@ -94,18 +102,18 @@ func Test_jsonToMap(t *testing.T) {
 		want    map[int]Product
 		wantErr bool
 	}{
-		{"simple json", args{[]byte(mocksData[0].mockJson)},
-			map[int]Product{mocksData[0].mockStruct[0].Id: mocksData[0].mockStruct[0]}, false},
+		{"Simple JSON", args{[]byte(mocksData[0].mockJSON)},
+			map[int]Product{mocksData[0].mockStruct[0].ID: mocksData[0].mockStruct[0]}, false},
 
-		{"simple json with other data", args{[]byte(mocksData[1].mockJson)},
-			map[int]Product{mocksData[1].mockStruct[0].Id: mocksData[1].mockStruct[0]}, false},
+		{"Simple JSON with different Data", args{[]byte(mocksData[1].mockJSON)},
+			map[int]Product{mocksData[1].mockStruct[0].ID: mocksData[1].mockStruct[0]}, false},
 
-		{"json with multiple data", args{[]byte(mocksData[2].mockJson)}, productMap, false},
+		{"JSON with Multiple Data", args{[]byte(mocksData[2].mockJSON)}, productMap, false},
 
-		{"empty json", args{[]byte("")}, map[int]Product{}, false},
+		{"Empty JSON", args{[]byte("")}, map[int]Product{}, false},
 
-		{"malformatted json", args{[]byte(mocksData[3].mockJson)},
-			map[int]Product{mocksData[3].mockStruct[0].Id: mocksData[3].mockStruct[0]}, true},
+		{"Malformatted JSON", args{[]byte(mocksData[3].mockJSON)},
+			map[int]Product{mocksData[3].mockStruct[0].ID: mocksData[3].mockStruct[0]}, true},
 	}
 
 	for _, tt := range tests {
@@ -136,9 +144,10 @@ func Test_loadProducts(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		{"working case", args{"unitTestData/3.json"}, []byte("test"), false},
-		{"file doesnt exists", args{"unitTestData/noexist.json"}, []byte("test"), true},
-	}
+		{"Normal JSON", args{"unitTestData/3.json"}, []byte("test"), false},
+		{"Wrong JSON path", args{"unitTestData/noexist.json"}, []byte("test"), true},
+	} //using test files to check if the method actually reads their contents
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := loadProducts(tt.args.file)
@@ -162,11 +171,11 @@ func TestGetAllProducts(t *testing.T) {
 	}
 
 	map1 := make(map[int]Product)
-	map1[1] = Product{Id: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, Is_gift: false}
+	map1[1] = Product{ID: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, IsGift: false}
 
 	map2 := make(map[int]Product)
-	map2[1] = Product{Id: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, Is_gift: false}
-	map2[2] = Product{Id: 2, Title: "Ergonomic Cotton Keyboard", Description: "Iste est ratione excepturi repellendus adipisci qui.", Amount: 93811, Is_gift: true}
+	map2[1] = Product{ID: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, IsGift: false}
+	map2[2] = Product{ID: 2, Title: "Ergonomic Cotton Keyboard", Description: "Iste est ratione excepturi repellendus adipisci qui.", Amount: 93811, IsGift: true}
 
 	tests := []struct {
 		name    string
@@ -176,9 +185,9 @@ func TestGetAllProducts(t *testing.T) {
 	}{
 		{"working case 1", args{"unitTestData/1.json"}, map1, false},
 		{"working case 2", args{"unitTestData/2.json"}, map2, false},
-		{"not working case 1", args{"unitTestData/3.json"}, nil, true},
-		{"not working case 2", args{"unitTestData/nonexist.json"}, nil, true},
-	}
+		{"error case 1", args{"unitTestData/3.json"}, nil, true},
+		{"error case 2", args{"unitTestData/nonexist.json"}, nil, true},
+	} //since now we already have unit tests for each method separately, we can use some files to test the final method
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -186,10 +195,10 @@ func TestGetAllProducts(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAllProducts() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			} else {
-				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("GetAllProducts() = %v, want %v", got, tt.want)
-				}
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAllProducts() = %v, want %v", got, tt.want)
+
 			}
 		})
 	}

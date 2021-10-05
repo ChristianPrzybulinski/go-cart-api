@@ -1,3 +1,6 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
 package endpoints
 
 import (
@@ -23,9 +26,9 @@ func Test_handleRequest(t *testing.T) {
 		wantErr bool
 	}{
 		{"Valid request", args{mockRequest(getMockJSON("unitTestData/requests/1.json"))}, request1, false},
-		{"invalid request", args{mockRequest(getMockJSON("unitTestData/requests/3.json"))}, CartRequests{}, true},
-		{"Double requests", args{mockRequest(getMockJSON("unitTestData/requests/2.json"))}, request2, false},
-		{"empty request", args{mockRequest("")}, CartRequests{}, true},
+		{"Invalid request", args{mockRequest(getMockJSON("unitTestData/requests/3.json"))}, CartRequests{}, true},
+		{"Request with two Products", args{mockRequest(getMockJSON("unitTestData/requests/2.json"))}, request2, false},
+		{"Empty request", args{mockRequest("")}, CartRequests{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

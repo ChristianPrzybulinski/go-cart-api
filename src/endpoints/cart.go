@@ -1,3 +1,7 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
+//Endpoints package
 package endpoints
 
 import (
@@ -11,6 +15,7 @@ import (
 	"github.com/ChristianPrzybulinski/go-cart-api/src/errors"
 )
 
+//Struct that represents the CardEndpoints envvars and Database
 type CartEndpoint struct {
 	Database               map[int]database.Product
 	DiscountServiceAddress string `default:":50051"`
@@ -18,11 +23,25 @@ type CartEndpoint struct {
 	BlackFriday            string `default:""`
 }
 
-func NewCartEndpoint(database map[int]database.Product, discountHost string, discountPort string, discountTimeout string, blackFriday string) Endpoint {
+//Initialize the Endpoint, setting the envvars inside the struct or its default values
+//For each parameters, its checked if its empty, in case true we use the default value
+func NewCartEndpoint(databasePath string, discountHost string, discountPort string, discountTimeout string, blackFriday string) Endpoint {
 	var c CartEndpoint
 	defaults.SetDefaults(&c)
 
-	c.Database = database
+	log.Infoln("Database path is: " + databasePath)
+
+	log.Infoln("Loading Products Database...")
+	products, err := database.GetAllProducts(databasePath + "/products.json")
+
+	if err != nil {
+		log.Errorln(err.Error())
+		c.Database = make(map[int]database.Product)
+	} else {
+		log.Infoln("Products Database Loaded.")
+		c.Database = products
+	}
+
 	if len(discountHost) > 0 {
 		if len(discountPort) > 0 {
 			c.DiscountServiceAddress = discountHost + ":" + discountPort
@@ -54,6 +73,7 @@ func NewCartEndpoint(database map[int]database.Product, discountHost string, dis
 	return c
 }
 
+//Method that handle the Post Request and Send the Response
 func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	requests, err := cart.handleRequest(r)
 	var ok bool
@@ -67,6 +87,7 @@ func (cart CartEndpoint) Post(w http.ResponseWriter, r *http.Request) {
 	log.Infoln("The request was processed: ", ok)
 }
 
+//Method to Write the response back to the client, error or success (JSON)
 func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartResponse, err error) bool {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -74,14 +95,14 @@ func (cart CartEndpoint) sendResponse(w http.ResponseWriter, response CartRespon
 		responseJSON := response.JSON()
 		log.Infoln("/cart API Response: ", responseJSON)
 		w.Write([]byte(responseJSON))
-
 		return true
-	} else {
-		log.Errorln(err.Error())
-		w.WriteHeader(errors.GetError(err).StatusCode())
-		responseJSON := errors.GetError(err).JSON()
-		log.Infoln("/cart API Response: ", responseJSON)
-		w.Write([]byte(responseJSON))
-		return false
 	}
+
+	log.Errorln(err.Error())
+	w.WriteHeader(errors.GetError(err).StatusCode())
+	responseJSON := errors.GetError(err).JSON()
+	log.Infoln("/cart API Response: ", responseJSON)
+	w.Write([]byte(responseJSON))
+	return false
+
 }

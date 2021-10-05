@@ -1,3 +1,5 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
 package utils
 
 import (
@@ -16,16 +18,16 @@ func TestInitLog(t *testing.T) {
 		args       args
 		wantResult log.Level
 	}{
-		{"debug mode", args{"debug"}, log.DebugLevel},
-		{"error mode", args{"error"}, log.ErrorLevel},
-		{"warn mode", args{"warn"}, log.WarnLevel},
-		{"info mode", args{"info"}, log.InfoLevel},
-		{"empty string", args{""}, log.InfoLevel},
-		{"wrong string", args{"jasihddshnaiohdasuihda"}, log.InfoLevel},
-		{"warning mode", args{"warning"}, log.WarnLevel},
-		{"err mode", args{"err"}, log.ErrorLevel},
-		{"numbers", args{"12312421521"}, log.InfoLevel},
-		{"null", args{os.Getenv("variavel que nao existe")}, log.InfoLevel},
+		{"Debug Mode", args{"debug"}, log.DebugLevel},
+		{"Error Mode", args{"error"}, log.ErrorLevel},
+		{"Warn Mode", args{"warn"}, log.WarnLevel},
+		{"Info Mode", args{"info"}, log.InfoLevel},
+		{"Empty String", args{""}, log.InfoLevel},
+		{"Wrong string", args{"jasihddshnaiohdasuihda"}, log.InfoLevel},
+		{"Warning Mode", args{"warning"}, log.WarnLevel},
+		{"Err Mode", args{"err"}, log.ErrorLevel},
+		{"Using Numbers", args{"12312421521"}, log.InfoLevel},
+		{"Using a not setted envvar", args{os.Getenv("not exists variable")}, log.InfoLevel},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -33,7 +35,7 @@ func TestInitLog(t *testing.T) {
 
 			gotResult := log.GetLevel()
 			if gotResult != tt.wantResult {
-				t.Errorf("logs.InitLog() failed = %v, want %v", gotResult, tt.wantResult)
+				t.Errorf("logs.InitLog() name = %v failed = %v, want %v", tt.name, gotResult, tt.wantResult)
 			}
 		})
 	}

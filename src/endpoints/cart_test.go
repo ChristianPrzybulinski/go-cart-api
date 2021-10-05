@@ -1,3 +1,6 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
 package endpoints
 
 import (
@@ -16,7 +19,7 @@ import (
 
 func TestNewCartEndpoint(t *testing.T) {
 	type args struct {
-		database        map[int]database.Product
+		database        string
 		discountHost    string
 		discountPort    string
 		discountTimeout string
@@ -27,16 +30,16 @@ func TestNewCartEndpoint(t *testing.T) {
 		args args
 		want Endpoint
 	}{
-		{"test 1", args{make(map[int]database.Product), "test", "123", "2", "2021-10-23"},
+		{"All parameters informed", args{"", "test", "123", "2", "2021-10-23"},
 			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: "test:123", DiscountServiceTimeout: 2, BlackFriday: "2021-10-23"}},
 
-		{"test 2", args{make(map[int]database.Product), "", "444", "50", ""},
+		{"Without black friday", args{"", "", "444", "50", ""},
 			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: ":444", DiscountServiceTimeout: 50, BlackFriday: ""}},
 
-		{"test 3", args{make(map[int]database.Product), "testing", "", "", ""},
+		{"without port, blackfriday and timeout", args{"", "testing", "", "", ""},
 			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: "testing:50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
 
-		{"test 4", args{make(map[int]database.Product), "", "", "0", ""},
+		{"only database informed", args{"unitTestData/databases/1.json", "", "", "0", ""},
 			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: ":50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
 	}
 	for _, tt := range tests {
@@ -64,8 +67,8 @@ func TestCartEndpoint_sendResponse(t *testing.T) {
 		args args
 		want bool
 	}{
-		{"cenario 1", mockCartEndpoint(false), cenario1, true},
-		{"cenario 2", mockCartEndpoint(false), cenario2, false},
+		{"Success scenario", mockCartEndpoint(false), cenario1, true},
+		{"Failed scenario", mockCartEndpoint(false), cenario2, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -76,12 +79,14 @@ func TestCartEndpoint_sendResponse(t *testing.T) {
 	}
 }
 
+//we mock a responseWriter to use
 func mockResponseWriter() *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
 
 	return w
 }
 
+//we mock a HttpRequest to use
 func mockRequest(requestBody string) *http.Request {
 
 	req := httptest.NewRequest("POST", "http://example.com/foo", strings.NewReader(requestBody))
@@ -89,12 +94,13 @@ func mockRequest(requestBody string) *http.Request {
 	return req
 }
 
+//we mock a CartEndpoint with some default database values and passing if we want black friday or not
 func mockCartEndpoint(blackfriday bool) CartEndpoint {
 	var cart CartEndpoint
 	cart.Database = make(map[int]database.Product)
-	cart.Database[1] = database.Product{Id: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, Is_gift: false}
-	cart.Database[2] = database.Product{Id: 2, Title: "Ergonomic Cotton Keyboard", Description: "Iste est ratione excepturi repellendus adipisci qui.", Amount: 93811, Is_gift: true}
-	cart.Database[3] = database.Product{Id: 3, Title: "test", Description: "a little test.", Amount: 666, Is_gift: false}
+	cart.Database[1] = database.Product{ID: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, IsGift: false}
+	cart.Database[2] = database.Product{ID: 2, Title: "Ergonomic Cotton Keyboard", Description: "Iste est ratione excepturi repellendus adipisci qui.", Amount: 93811, IsGift: true}
+	cart.Database[3] = database.Product{ID: 3, Title: "test", Description: "a little test.", Amount: 666, IsGift: false}
 
 	if blackfriday {
 		cart.BlackFriday = time.Now().Format("2006-01-02")
@@ -103,10 +109,12 @@ func mockCartEndpoint(blackfriday bool) CartEndpoint {
 	return cart
 }
 
+//clear the whitespaces and newlines to compare
 func clearString(str string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(str, " ", ""), "\n", ""), "\r", ""), "\t", "")
 }
 
+//read the file (path) informed and return it as a string (used to read the file that contains the json content)
 func getMockJSON(file string) string {
 	var jsonResponse []byte
 
@@ -134,11 +142,11 @@ func TestCartEndpoint_Post(t *testing.T) {
 		cart CartEndpoint
 		args args
 	}{
-		{"test 1", mockCartEndpoint(false), args{getMockJSON("unitTestData/requests/1.json"), getMockJSON("unitTestData/responses/1.json")}},
-		{"test 2", mockCartEndpoint(false), args{"unitTestData/requests/4.json", getMockJSON("unitTestData/responses/4.json")}},
-		{"test 3", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/5.json")}},
-		{"test 4", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/4.json"), getMockJSON("unitTestData/responses/4.json")}},
-		{"test 5", mockRealCartEndpoint("unitTestData/databases/1.json", true), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/6.json")}},
+		{"Using a mocked database", mockCartEndpoint(false), args{getMockJSON("unitTestData/requests/1.json"), getMockJSON("unitTestData/responses/1.json")}},
+		{"using a mocked database with different data", mockCartEndpoint(false), args{"unitTestData/requests/4.json", getMockJSON("unitTestData/responses/4.json")}},
+		{"real database without black friday", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/5.json")}},
+		{"empty json request", mockRealCartEndpoint("unitTestData/databases/1.json", false), args{getMockJSON("unitTestData/requests/4.json"), getMockJSON("unitTestData/responses/4.json")}},
+		{"real database with black friday", mockRealCartEndpoint("unitTestData/databases/1.json", true), args{getMockJSON("unitTestData/requests/5.json"), getMockJSON("unitTestData/responses/6.json")}},
 	}
 
 	for _, tt := range tests {
@@ -157,12 +165,14 @@ func TestCartEndpoint_Post(t *testing.T) {
 	}
 }
 
+//mocks a response and request to use
 func mockServer(request string) (*httptest.ResponseRecorder, *http.Request) {
 	req := mockRequest(request)
 	w := mockResponseWriter()
 	return w, req
 }
 
+//mocks a CartEndpoint with a real database file json, and using blackfriday true or false as a parameter
 func mockRealCartEndpoint(file string, blackfriday bool) CartEndpoint {
 	var cart CartEndpoint
 	m, _ := database.GetAllProducts(file)

@@ -1,3 +1,6 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
 package endpoints
 
 import (
@@ -37,23 +40,23 @@ func Test_getGift(t *testing.T) {
 	}
 
 	map1 := make(map[int]database.Product)
-	map1[0] = database.Product{Id: 0, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
+	map1[0] = database.Product{ID: 0, Title: "0", Description: "0", Amount: 13123, IsGift: true}
 
 	response1 := []ResponseProduct{
 		{0, 1, 0, 0, 0, true},
 	}
 
 	map2 := make(map[int]database.Product)
-	map2[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: false}
-	map2[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: true}
+	map2[0] = database.Product{ID: 0, Title: "123", Description: "asda", Amount: 11, IsGift: false}
+	map2[1] = database.Product{ID: 1, Title: "0", Description: "0", Amount: 13123, IsGift: true}
 
 	response2 := []ResponseProduct{
 		{1, 1, 0, 0, 0, true},
 	}
 
 	map4 := make(map[int]database.Product)
-	map4[0] = database.Product{Id: 0, Title: "123", Description: "asda", Amount: 11, Is_gift: false}
-	map4[1] = database.Product{Id: 1, Title: "0", Description: "0", Amount: 13123, Is_gift: false}
+	map4[0] = database.Product{ID: 0, Title: "123", Description: "asda", Amount: 11, IsGift: false}
+	map4[1] = database.Product{ID: 1, Title: "0", Description: "0", Amount: 13123, IsGift: false}
 
 	response4 := []ResponseProduct{
 		{},
@@ -66,7 +69,7 @@ func Test_getGift(t *testing.T) {
 		moreThanOneResult bool
 	}{
 		{"Gift found", args{map1}, response1, false},
-		{"Gift found with two value", args{map2}, response2, false},
+		{"Gift found with two values", args{map2}, response2, false},
 		{"no Gifts found", args{map4}, response4, false},
 	}
 	for _, tt := range tests {
@@ -113,8 +116,8 @@ func Test_mapToSlice(t *testing.T) {
 		args args
 		want []ResponseProduct
 	}{
-		{"one element test", args{map1}, slice1},
-		{"two element test", args{map2}, slice2},
+		{"One element test", args{map1}, slice1},
+		{"Two element test", args{map2}, slice2},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

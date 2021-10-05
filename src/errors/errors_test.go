@@ -1,3 +1,6 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
 package errors
 
 import (
@@ -16,7 +19,7 @@ func TestGetError(t *testing.T) {
 		args args
 		want *Error
 	}{
-		{"Other errors", args{http.ErrBodyNotAllowed}, ErrInternal},
+		{"Other Errors", args{http.ErrBodyNotAllowed}, ErrInternal},
 		{"ErrNotFound", args{ErrNotFound}, ErrNotFound},
 	}
 
@@ -38,7 +41,7 @@ func TestError_Error(t *testing.T) {
 		{"ErrNotFound", ErrNotFound, "error: code=" + http.StatusText(http.StatusNotFound) + " message=Not Found (404)"},
 		{"StatusInternalServerError", ErrInternal, "error: code=" + http.StatusText(http.StatusInternalServerError) + " message=Internal Server Error (500)"},
 		{"StatusBadRequest", ErrBadRequest, "error: code=" + http.StatusText(http.StatusBadRequest) + " message=Bad Request (400)"},
-		{"nulo", nil, ""},
+		{"Nil", nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -58,9 +61,9 @@ func TestError_JSON(t *testing.T) {
 		{"ErrNotFound", ErrNotFound, "{\"code\":404,\"message\":\"Not Found (404)\"}"},
 		{"StatusInternalServerError", ErrInternal, "{\"code\":500,\"message\":\"Internal Server Error (500)\"}"},
 		{"StatusBadRequest", ErrBadRequest, "{\"code\":400,\"message\":\"Bad Request (400)\"}"},
-		{"nulo", nil, "{}"},
-		{"Empty cart", ErrEmptyCart, "{\"code\":400,\"message\":\"Bad Request (400) - Empty Cart / no Product found!\"}"},
-	}
+		{"Nil", nil, "{}"},
+		{"Empty Cart", ErrEmptyCart, "{\"code\":400,\"message\":\"Bad Request (400) - Empty Cart / no Product found!\"}"},
+	} //could be used some files to test, but since its just a string to JSON method, not necessary
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.err.JSON(); clearString(got) != clearString(tt.want) {
@@ -79,7 +82,7 @@ func TestError_StatusCode(t *testing.T) {
 		{"ErrNotFound", ErrNotFound, http.StatusNotFound},
 		{"StatusInternalServerError", ErrInternal, http.StatusInternalServerError},
 		{"StatusBadRequest", ErrBadRequest, http.StatusBadRequest},
-		{"nulo", nil, http.StatusOK},
+		{"Nil", nil, http.StatusOK},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -90,6 +93,7 @@ func TestError_StatusCode(t *testing.T) {
 	}
 }
 
+//utils method to clear all spaces and newlines to compare
 func clearString(str string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(str, " ", ""), "\n", ""), "\r", ""), "\t", "")
 }

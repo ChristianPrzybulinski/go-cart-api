@@ -1,3 +1,7 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
+//Endpoints package
 package endpoints
 
 import (
@@ -9,15 +13,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//Struct to Represent each Product Request from the Cart API
 type CartRequest struct {
-	Id       int `json:"id"`
+	ID       int `json:"id"`
 	Quantity int `json:"quantity"`
 }
 
+//Struct the reprents a list of Product Request from the Cart API
 type CartRequests struct {
 	CartRequest []CartRequest `json:"products"`
 }
 
+//An Internal CartEndpoint method to handle the JSON request
+//Transform the JSON into the struct CartRequests
 func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 	var cartRequests CartRequests
 	body, err := ioutil.ReadAll(r.Body)
@@ -31,12 +39,13 @@ func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 		}
 	}
 
+	//validate if for some reason the cart is empty, so we can return an error
 	if len(cartRequests.CartRequest) == 0 {
 		log.Debugln("Cart is empty!!")
 		err = errors.ErrEmptyCart
 	} else {
 		for _, c := range cartRequests.CartRequest {
-			if c.Id < 1 || c.Quantity < 1 {
+			if c.ID < 1 || c.Quantity < 1 { //validate the ID and Quantity informed in the JSON request, so that it can't be lower than 1
 				log.Debugln("ID or Quantity < 1")
 				err = errors.ErrBadRequest
 			}
@@ -46,8 +55,7 @@ func (cart CartEndpoint) handleRequest(r *http.Request) (CartRequests, error) {
 
 	if err != nil {
 		return CartRequests{}, err
-	} else {
-		return cartRequests, nil
 	}
+	return cartRequests, nil
 
 }

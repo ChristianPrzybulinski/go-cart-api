@@ -1,23 +1,24 @@
+// Copyright Christian Przybulinski
+// All Rights Reserved
+
+//main package
 package main
 
 import (
 	"os"
 	"strings"
 
-	"github.com/ChristianPrzybulinski/go-cart-api/src/database"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/handlers"
 	"github.com/ChristianPrzybulinski/go-cart-api/src/utils"
 	"github.com/mcuadros/go-defaults"
 	log "github.com/sirupsen/logrus"
 )
 
-type Args struct {
-	ApiAddress   string `default:":8080"`
-	DatabasePath string `default:"./database"`
-}
-
-func Init() Args {
-	var args Args
+//Used to init all the parameters and envvars used in the API
+//Get args passed in the command line:
+//1: API ADDRESS (host:port) ~ 2: Log Level (info,debug,warn,error) 3: Database Path (filesystem path)
+func Init() handlers.Args {
+	var args handlers.Args
 	defaults.SetDefaults(&args)
 
 	if len(os.Args) <= 2 {
@@ -25,6 +26,7 @@ func Init() Args {
 	} else {
 		utils.InitLog(strings.ToLower(os.Args[2]))
 	}
+	log.Infoln("Logs started with " + log.GetLevel().String() + " level.")
 
 	if len(os.Args) <= 1 {
 		host := os.Getenv("API_HOST")
@@ -32,17 +34,17 @@ func Init() Args {
 
 		if len(host) > 0 {
 			if len(port) > 0 {
-				args.ApiAddress = host + ":" + port
+				args.APIAddress = host + ":" + port
 			} else {
-				args.ApiAddress = host + args.ApiAddress
+				args.APIAddress = host + args.APIAddress
 			}
 		} else {
 			if len(port) > 0 {
-				args.ApiAddress = ":" + port
+				args.APIAddress = ":" + port
 			}
 		}
 	} else {
-		args.ApiAddress = os.Args[1]
+		args.APIAddress = os.Args[1]
 	}
 
 	if len(os.Args) <= 2 {
@@ -58,21 +60,10 @@ func Init() Args {
 	return args
 }
 
+//start the server
 func main() {
 
 	args := Init()
 
-	log.Infoln("Logs started with " + log.GetLevel().String() + " level.")
-	log.Infoln("Database path start with" + args.DatabasePath)
-
-	log.Infoln("Loading Products Database...")
-	products, err := database.GetAllProducts(args.DatabasePath + "/products.json")
-	if err == nil {
-		log.Infoln("Products Database Loaded.")
-
-		handlers.StartServer(args.ApiAddress, products)
-	} else {
-		log.Errorln(err.Error())
-		os.Exit(1)
-	}
+	handlers.StartServer(args)
 }
