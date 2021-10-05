@@ -25,6 +25,10 @@ func TestNewCartEndpoint(t *testing.T) {
 		discountTimeout string
 		blackFriday     string
 	}
+
+	dbTest := make(map[int]database.Product)
+	dbTest[1] = database.Product{ID: 1, Title: "Ergonomic Wooden Pants", Description: "Deleniti beatae porro.", Amount: 15157, IsGift: false}
+
 	tests := []struct {
 		name string
 		args args
@@ -39,8 +43,8 @@ func TestNewCartEndpoint(t *testing.T) {
 		{"without port, blackfriday and timeout", args{"", "testing", "", "", ""},
 			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: "testing:50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
 
-		{"only database informed", args{"unitTestData/databases/1.json", "", "", "0", ""},
-			CartEndpoint{Database: make(map[int]database.Product), DiscountServiceAddress: ":50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
+		{"only database informed", args{"unitTestData/databases", "", "", "0", ""},
+			CartEndpoint{Database: dbTest, DiscountServiceAddress: ":50051", DiscountServiceTimeout: 1, BlackFriday: ""}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -18,4 +18,6 @@ FROM scratch
 COPY --from=go-cart-api /go-cart-api/src/database/*json /database/
 COPY --from=go-cart-api /go-cart-api/bin/go-cart-api .
 
+EXPOSE 8080:8080
+
 ENTRYPOINT  ["./go-cart-api"]
