@@ -8,7 +8,7 @@ GOLang Project that provides a simple Endpoint API (**/cart**) that works as a c
 - Returning a JSON that contains the checkout list with Its values;
 - It uses an Internal Database that is populated using a provided JSON file;
 - It also has a flag that checks If It's Black Friday day, so It will add a Gift to the final checkout list;
-- Last but not least, there's an integration with a gRPC provided that can apply a discout percentage in the product list. (The .proto file is inside the project in the discount package).
+- Last but not least, there's an integration with a gRPC provided that can apply a discount percentage in the product list. (The .proto file is inside the project in the discount package).
 
 ## Sample uses
 
@@ -114,7 +114,7 @@ Given the following Database:
 This can either be done through the `docker-compose`, docker image or by cloning the repo.
 
 ## Pre-requisites
-The API uses some enviromnent variables, they are all provided in the **.env** file in the project repository. But in case you don't want to use the file, you can manually setup them or use their *default* values.
+The API uses some environment variables, they are all provided in the **.env** file in the project repository. But in case you don't want to use the file, you can manually setup them or use their *default* values.
 
 ### Default values:
 ```
@@ -141,9 +141,9 @@ The API uses some enviromnent variables, they are all provided in the **.env** f
 
 ### Through Docker-Compose:
 
-I suggest to clone the repo, so you can have all files and project. But you only need the `docker-compose.yml` and the `.env` provided to start up the service. In case you setted the enviromnent variables manually, you won't need the `.env` file.
+I suggest to clone the repo, so you can have all files and project. But you only need the `docker-compose.yml` and the `.env` provided to start up the service. In case you setted the environment variables manually, you won't need the `.env` file.
 
-**Note:** In case you're using the default values for the enviromnent variables, you will need to edit the `docker-compose.yml` filling up the {APP_PATH} to any path you want, {API_PORT} to 8080 and {DISCOUNT_SERVICE_PORT} to 50051.
+**Note:** In case you're using the default values for the environment variables, you will need to edit the `docker-compose.yml` filling up the {APP_PATH} to any path you want, {API_PORT} to 8080 and {DISCOUNT_SERVICE_PORT} to 50051.
 
 Starting the service: 
 
@@ -168,7 +168,7 @@ docker run --env-file=.env christianprzybulinski/go-cart-api
 
 docker run -p 50051:50051 hashorg/hash-mock-discount-service
 ```
-You can skip the `--env-file` parameter in case you manually configured the enviromnent variables or want to use their default values.
+You can skip the `--env-file` parameter in case you manually configured the environment variables or want to use their default values.
 
 ### Through Repo:
 
@@ -198,7 +198,7 @@ Example: go run . 8080 debug
 
 # Sample request:
 
-You can test the API Endpoint with any software that provides you a HTPP POST request to be made. I'll be showing the easiest one since you probably already have everything installed.
+You can test the API Endpoint with any software that provides you a HTTP POST request to be made. 
 
 **Note:** The endpoint will be available at the `$API_HOST:$API_PORT/api/v1/cart`. In case you used the `.env` file or the default settings, It is going to be as the example below.
 
