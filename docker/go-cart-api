@@ -1,0 +1,23 @@
+FROM golang:1.17-alpine as go-cart-api
+
+RUN apk update && apk add --no-cache git
+
+WORKDIR /go-cart-api
+
+COPY go.mod ./
+COPY go.sum ./
+
+RUN go mod download
+
+COPY src/ ./src
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./bin/go-cart-api ./src
+
+FROM scratch
+
+COPY --from=go-cart-api /go-cart-api/src/database/*json /database/
+COPY --from=go-cart-api /go-cart-api/bin/go-cart-api .
+
+EXPOSE 8080:8080
+
+ENTRYPOINT  ["./go-cart-api"]

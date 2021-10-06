@@ -1,0 +1,15 @@
+{
+    "total_amount": 100,
+    "total_amount_with_discount": 50,
+    "total_discount": 50,
+    "products": [
+        {
+            "id": 1,
+            "quantity": 1,
+            "unit_amount": 100, 
+            "total_amount": 100,
+            "discount": 50, 
+            "is_gift": false 
+        }
+    ]
+}
